@@ -68,8 +68,18 @@ public abstract class AbstractEntry {
 
     // 处理xml文件
     protected MyBatisSqlInfo handleXmlFile(String filePath) {
-        logger.debug("处理xml文件 {}", filePath);
         try (InputStream inputStream = new FileInputStream(filePath)) {
+            return handleXmlFile(inputStream, filePath);
+        } catch (Exception e) {
+            logger.error("error ", e);
+            return null;
+        }
+    }
+
+    // 处理xml文件
+    protected MyBatisSqlInfo handleXmlFile(InputStream inputStream, String filePath) {
+        logger.debug("处理xml文件 {}", filePath);
+        try {
             // 解析MyBatis的XML文件中的sql语句
             MyBatisSqlInfo myBatisSqlInfo = myBatisXmlSqlParser.parseMybatisXmlSql(inputStream, filePath);
             if (myBatisSqlInfo == null) {
