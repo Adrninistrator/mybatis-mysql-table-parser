@@ -1,0 +1,12 @@
+build/
+dist/
+bin/
+out/
+.project
+.settings/
+.idea/
+.gradle/
+*.iml
+.classpath
+src/test/java/test_local/
+result_table_*.txt
