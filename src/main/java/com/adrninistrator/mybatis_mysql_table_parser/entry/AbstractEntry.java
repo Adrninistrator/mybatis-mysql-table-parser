@@ -1,6 +1,6 @@
 package com.adrninistrator.mybatis_mysql_table_parser.entry;
 
-import com.adrninistrator.mybatis_mysql_table_parser.dto.MyBatisSqlInfo;
+import com.adrninistrator.mybatis_mysql_table_parser.dto.MyBatisMySqlInfo;
 import com.adrninistrator.mybatis_mysql_table_parser.dto.MySqlTableInfo;
 import com.adrninistrator.mybatis_mysql_table_parser.parser.MyBatisXmlSqlParser;
 import com.adrninistrator.mybatis_mysql_table_parser.parser.MySqlTableParser;
@@ -34,7 +34,7 @@ public abstract class AbstractEntry {
         value
             MyBatis的sql信息
      */
-    protected final Map<String, MyBatisSqlInfo> myBatisSqlInfoMap;
+    protected final Map<String, MyBatisMySqlInfo> myBatisSqlInfoMap;
 
     protected AbstractEntry() {
         myBatisXmlSqlParser = new MyBatisXmlSqlParser();
@@ -67,7 +67,7 @@ public abstract class AbstractEntry {
     }
 
     // 处理xml文件
-    protected MyBatisSqlInfo handleXmlFile(String filePath) {
+    protected MyBatisMySqlInfo handleXmlFile(String filePath) {
         try (InputStream inputStream = new FileInputStream(filePath)) {
             return handleXmlFile(inputStream, filePath);
         } catch (Exception e) {
@@ -77,11 +77,11 @@ public abstract class AbstractEntry {
     }
 
     // 处理xml文件
-    protected MyBatisSqlInfo handleXmlFile(InputStream inputStream, String filePath) {
+    protected MyBatisMySqlInfo handleXmlFile(InputStream inputStream, String filePath) {
         logger.debug("处理xml文件 {}", filePath);
         try {
             // 解析MyBatis的XML文件中的sql语句
-            MyBatisSqlInfo myBatisSqlInfo = myBatisXmlSqlParser.parseMybatisXmlSql(inputStream, filePath);
+            MyBatisMySqlInfo myBatisSqlInfo = myBatisXmlSqlParser.parseMybatisXmlSql(inputStream, filePath);
             if (myBatisSqlInfo == null) {
                 return null;
             }

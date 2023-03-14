@@ -1,6 +1,6 @@
 package com.adrninistrator.mybatis_mysql_table_parser.entry;
 
-import com.adrninistrator.mybatis_mysql_table_parser.dto.MyBatisSqlInfo;
+import com.adrninistrator.mybatis_mysql_table_parser.dto.MyBatisMySqlInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +22,7 @@ public class Entry4ParseMyBatisMySqlTable extends AbstractEntry {
      * @param dirPath 需要解析的目录路径
      * @return MyBatis的sql信息，说明见AbstractEntry类的myBatisSqlInfoMap字段
      */
-    public Map<String, MyBatisSqlInfo> parseDirectory(String dirPath) {
+    public Map<String, MyBatisMySqlInfo> parseDirectory(String dirPath) {
         if (StringUtils.isBlank(dirPath)) {
             logger.error("传入参数不允许为空");
             return null;
@@ -40,7 +40,7 @@ public class Entry4ParseMyBatisMySqlTable extends AbstractEntry {
      * @param filePath 需要解析的文件路径
      * @return MyBatis的sql信息，说明见AbstractEntry类的myBatisSqlInfoMap字段
      */
-    public MyBatisSqlInfo parseFile(String filePath) {
+    public MyBatisMySqlInfo parseFile(String filePath) {
         if (StringUtils.isBlank(filePath)) {
             logger.error("传入参数不允许为空");
             return null;
@@ -57,7 +57,7 @@ public class Entry4ParseMyBatisMySqlTable extends AbstractEntry {
      * @param filePath    需要解析的文件路径，仅用于打印日志
      * @return MyBatis的sql信息，说明见AbstractEntry类的myBatisSqlInfoMap字段
      */
-    public MyBatisSqlInfo parseFile(InputStream inputStream, String filePath) {
+    public MyBatisMySqlInfo parseFile(InputStream inputStream, String filePath) {
         if (StringUtils.isBlank(filePath)) {
             logger.error("传入参数不允许为空");
             return null;

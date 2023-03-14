@@ -147,9 +147,9 @@ public class MySqlTableParser {
             SQLTableSource sqlTableSource = sqlSelectQueryBlock.getFrom();
             if (sqlTableSource != null) {
                 // 判断是select还是select for update
-                MySqlStatementEnum mySqlStatementEnum = MySqlStatementEnum.DSE_SELECT;
+                MySqlStatementEnum mySqlStatementEnum = MySqlStatementEnum.DSSE_SELECT;
                 if (mySqlSelectQueryBlock != null && mySqlSelectQueryBlock.isForUpdate()) {
-                    mySqlStatementEnum = MySqlStatementEnum.DSE_SELECT_4_UPDATE;
+                    mySqlStatementEnum = MySqlStatementEnum.DSSE_SELECT_4_UPDATE;
                 }
 
                 // 处理涉及的表名
@@ -254,12 +254,12 @@ public class MySqlTableParser {
 
     // 解析insert语句
     private void parseInsertStatement(MySqlInsertStatement mySqlInsertStatement, MySqlTableInfo mySqlTableInfo) {
-        MySqlStatementEnum mySqlStatementEnum = MySqlStatementEnum.DSE_INSERT;
+        MySqlStatementEnum mySqlStatementEnum = MySqlStatementEnum.DSSE_INSERT;
         if (mySqlInsertStatement.isIgnore()) {
-            mySqlStatementEnum = MySqlStatementEnum.DSE_INSERT_IGNORE;
+            mySqlStatementEnum = MySqlStatementEnum.DSSE_INSERT_IGNORE;
         }
         if (mySqlInsertStatement.getDuplicateKeyUpdate() != null && !mySqlInsertStatement.getDuplicateKeyUpdate().isEmpty()) {
-            mySqlStatementEnum = MySqlStatementEnum.DSE_INSERT_OR_UPDATE;
+            mySqlStatementEnum = MySqlStatementEnum.DSSE_INSERT_OR_UPDATE;
         }
 
         SQLExprTableSource sqlExprTableSource = mySqlInsertStatement.getTableSource();
@@ -279,7 +279,7 @@ public class MySqlTableParser {
         String tableName = sqlExprTableSource.getTableName();
 
         // 记录表名
-        recordTableName(tableName, mySqlTableInfo, MySqlStatementEnum.DSE_REPLACE);
+        recordTableName(tableName, mySqlTableInfo, MySqlStatementEnum.DSSE_REPLACE);
 
         SQLQueryExpr sqlQueryExpr = sqlReplaceStatement.getQuery();
         if (sqlQueryExpr != null && sqlQueryExpr.getSubQuery() != null) {
@@ -297,7 +297,7 @@ public class MySqlTableParser {
 
         SQLTableSource sqlTableSource = sqlUpdateStatement.getTableSource();
         // 处理涉及的表名，update相关
-        handleSQLTableSource(sqlTableSource, updateMySqlTableInfo, MySqlStatementEnum.DSE_UPDATE);
+        handleSQLTableSource(sqlTableSource, updateMySqlTableInfo, MySqlStatementEnum.DSSE_UPDATE);
 
         for (SQLUpdateSetItem sqlUpdateSetItem : sqlUpdateStatement.getItems()) {
             SQLExpr columnExpr = sqlUpdateSetItem.getColumn();
@@ -307,7 +307,7 @@ public class MySqlTableParser {
                 String tableAlias = columnPropertyExpr.getOwnerName();
                 SQLTableSource setSqlTableSource = sqlTableSource.findTableSource(tableAlias);
                 // 处理涉及的表名
-                handleSQLTableSource(setSqlTableSource, updateUseAliasMySqlTableInfo, MySqlStatementEnum.DSE_UPDATE);
+                handleSQLTableSource(setSqlTableSource, updateUseAliasMySqlTableInfo, MySqlStatementEnum.DSSE_UPDATE);
             } else if (!(columnExpr instanceof SQLIdentifierExpr) &&
                     !(columnExpr instanceof SQLListExpr)) {
                 /*
@@ -367,13 +367,13 @@ public class MySqlTableParser {
                 SQLIdentifierExpr sqlIdentifierExpr = (SQLIdentifierExpr) tableSourceExpr;
                 String tableNameOrAlias = sqlIdentifierExpr.getName();
                 // 记录表名或别名
-                recordTableName(tableNameOrAlias, deleteMySqlTableInfo, MySqlStatementEnum.DSE_DELETE);
+                recordTableName(tableNameOrAlias, deleteMySqlTableInfo, MySqlStatementEnum.DSSE_DELETE);
             } else if (tableSourceExpr instanceof SQLPropertyExpr) {
                 // 使用别名，且delete时为"delete alias.*"形式
                 SQLPropertyExpr sqlPropertyExpr = (SQLPropertyExpr) tableSourceExpr;
                 String tableNameOrAlias = sqlPropertyExpr.getOwnerName();
                 // 记录表名或别名
-                recordTableName(tableNameOrAlias, deleteMySqlTableInfo, MySqlStatementEnum.DSE_DELETE);
+                recordTableName(tableNameOrAlias, deleteMySqlTableInfo, MySqlStatementEnum.DSSE_DELETE);
             } else if (!(tableSourceExpr instanceof SQLVariantRefExpr)) {
                 /*
                     SQLVariantRefExpr       ?
@@ -402,13 +402,13 @@ public class MySqlTableParser {
         }
 
         // delete的from非空，即使用别名删除的形式
-        handleSQLTableSource(sqlTableSourceFrom, fromMySqlTableInfo, MySqlStatementEnum.DSE_SELECT);
+        handleSQLTableSource(sqlTableSourceFrom, fromMySqlTableInfo, MySqlStatementEnum.DSSE_SELECT);
 
         for (String deleteTableNameOrAlias : deleteMySqlTableInfo.getDeleteTableList()) {
             SQLTableSource deleteSqlTableSource = sqlTableSourceFrom.findTableSource(deleteTableNameOrAlias);
             if (deleteSqlTableSource != null) {
                 // 处理涉及的表名，记录delete相关表名
-                handleSQLTableSource(deleteSqlTableSource, mySqlTableInfo, MySqlStatementEnum.DSE_DELETE);
+                handleSQLTableSource(deleteSqlTableSource, mySqlTableInfo, MySqlStatementEnum.DSSE_DELETE);
             }
         }
 
@@ -423,28 +423,28 @@ public class MySqlTableParser {
     // 解析alter table语句
     private void parseAlterStatement(SQLAlterTableStatement sqlAlterTableStatement, MySqlTableInfo mySqlTableInfo) {
         // 处理涉及的表名
-        handleSQLTableSource(sqlAlterTableStatement.getTableSource(), mySqlTableInfo, MySqlStatementEnum.DSE_ALTER);
+        handleSQLTableSource(sqlAlterTableStatement.getTableSource(), mySqlTableInfo, MySqlStatementEnum.DSSE_ALTER);
     }
 
     // 解析truncate table语句
     private void parseTruncateStatement(SQLTruncateStatement sqlTruncateStatement, MySqlTableInfo mySqlTableInfo) {
         for (SQLExprTableSource sqlExprTableSource : sqlTruncateStatement.getTableSources()) {
             // 处理涉及的表名
-            handleSQLTableSource(sqlExprTableSource, mySqlTableInfo, MySqlStatementEnum.DSE_TRUNCATE);
+            handleSQLTableSource(sqlExprTableSource, mySqlTableInfo, MySqlStatementEnum.DSSE_TRUNCATE);
         }
     }
 
     // 解析create table语句
     private void parseCreateStatement(MySqlCreateTableStatement mySqlCreateTableStatement, MySqlTableInfo mySqlTableInfo) {
         // 处理涉及的表名
-        handleSQLTableSource(mySqlCreateTableStatement.getTableSource(), mySqlTableInfo, MySqlStatementEnum.DSE_CREATE);
+        handleSQLTableSource(mySqlCreateTableStatement.getTableSource(), mySqlTableInfo, MySqlStatementEnum.DSSE_CREATE);
     }
 
     // 解析drop table语句
     private void parseDropStatement(SQLDropTableStatement sqlDropTableStatement, MySqlTableInfo mySqlTableInfo) {
         for (SQLExprTableSource sqlExprTableSource : sqlDropTableStatement.getTableSources()) {
             // 处理涉及的表名
-            handleSQLTableSource(sqlExprTableSource, mySqlTableInfo, MySqlStatementEnum.DSE_DROP);
+            handleSQLTableSource(sqlExprTableSource, mySqlTableInfo, MySqlStatementEnum.DSSE_DROP);
         }
     }
 
@@ -507,40 +507,40 @@ public class MySqlTableParser {
     // 记录表名
     private void recordTableName(String tableName, MySqlTableInfo mySqlTableInfo, MySqlStatementEnum mySqlStatementEnum) {
         switch (mySqlStatementEnum) {
-            case DSE_SELECT:
+            case DSSE_SELECT:
                 mySqlTableInfo.addSelectTable(tableName);
                 break;
-            case DSE_SELECT_4_UPDATE:
+            case DSSE_SELECT_4_UPDATE:
                 mySqlTableInfo.addSelect4UpdateTable(tableName);
                 break;
-            case DSE_INSERT:
+            case DSSE_INSERT:
                 mySqlTableInfo.addInsertTable(tableName);
                 break;
-            case DSE_INSERT_IGNORE:
+            case DSSE_INSERT_IGNORE:
                 mySqlTableInfo.addInsertIgnoreTable(tableName);
                 break;
-            case DSE_INSERT_OR_UPDATE:
+            case DSSE_INSERT_OR_UPDATE:
                 mySqlTableInfo.addInsertOrUpdateTable(tableName);
                 break;
-            case DSE_REPLACE:
+            case DSSE_REPLACE:
                 mySqlTableInfo.addReplaceIntoTable(tableName);
                 break;
-            case DSE_UPDATE:
+            case DSSE_UPDATE:
                 mySqlTableInfo.addUpdateTable(tableName);
                 break;
-            case DSE_DELETE:
+            case DSSE_DELETE:
                 mySqlTableInfo.addDeleteTable(tableName);
                 break;
-            case DSE_ALTER:
+            case DSSE_ALTER:
                 mySqlTableInfo.addAlterTable(tableName);
                 break;
-            case DSE_TRUNCATE:
+            case DSSE_TRUNCATE:
                 mySqlTableInfo.addTruncateTable(tableName);
                 break;
-            case DSE_CREATE:
+            case DSSE_CREATE:
                 mySqlTableInfo.addCreateTable(tableName);
                 break;
-            case DSE_DROP:
+            case DSSE_DROP:
                 mySqlTableInfo.addDropTable(tableName);
                 break;
             default:

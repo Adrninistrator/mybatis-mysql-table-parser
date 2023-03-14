@@ -2,7 +2,7 @@ package com.adrninistrator.mybatis_mysql_table_parser.entry;
 
 import com.adrninistrator.mybatis_mysql_table_parser.common.MyBatisTableParserConstants;
 import com.adrninistrator.mybatis_mysql_table_parser.common.enums.MySqlStatementEnum;
-import com.adrninistrator.mybatis_mysql_table_parser.dto.MyBatisSqlInfo;
+import com.adrninistrator.mybatis_mysql_table_parser.dto.MyBatisMySqlInfo;
 import com.adrninistrator.mybatis_mysql_table_parser.dto.MySqlTableInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -52,25 +52,25 @@ public class Entry4GetMyBatisMySqlTableDetailInfo extends AbstractEntry {
             List<String> mapperClassNameList = new ArrayList<>(myBatisSqlInfoMap.keySet());
             Collections.sort(mapperClassNameList);
             for (String mapperClassName : mapperClassNameList) {
-                MyBatisSqlInfo myBatisSqlInfo = myBatisSqlInfoMap.get(mapperClassName);
+                MyBatisMySqlInfo myBatisSqlInfo = myBatisSqlInfoMap.get(mapperClassName);
                 Map<String, MySqlTableInfo> mySqlTableInfoMap = myBatisSqlInfo.getMySqlTableInfoMap();
                 List<String> mapperMethodNameList = new ArrayList<>(mySqlTableInfoMap.keySet());
                 Collections.sort(mapperMethodNameList);
                 for (String mapperMethodName : mapperMethodNameList) {
                     MySqlTableInfo mySqlTableInfo = mySqlTableInfoMap.get(mapperMethodName);
                     // 在文件中记录表名信息
-                    recordTableInfo(writer, mapperClassName, mapperMethodName, MySqlStatementEnum.DSE_SELECT, mySqlTableInfo.getSelectTableList());
-                    recordTableInfo(writer, mapperClassName, mapperMethodName, MySqlStatementEnum.DSE_SELECT_4_UPDATE, mySqlTableInfo.getSelect4UpdateTableList());
-                    recordTableInfo(writer, mapperClassName, mapperMethodName, MySqlStatementEnum.DSE_INSERT, mySqlTableInfo.getInsertTableList());
-                    recordTableInfo(writer, mapperClassName, mapperMethodName, MySqlStatementEnum.DSE_INSERT_IGNORE, mySqlTableInfo.getInsertIgnoreTableList());
-                    recordTableInfo(writer, mapperClassName, mapperMethodName, MySqlStatementEnum.DSE_INSERT_OR_UPDATE, mySqlTableInfo.getInsertOrUpdateTableList());
-                    recordTableInfo(writer, mapperClassName, mapperMethodName, MySqlStatementEnum.DSE_REPLACE, mySqlTableInfo.getReplaceTableList());
-                    recordTableInfo(writer, mapperClassName, mapperMethodName, MySqlStatementEnum.DSE_UPDATE, mySqlTableInfo.getUpdateTableList());
-                    recordTableInfo(writer, mapperClassName, mapperMethodName, MySqlStatementEnum.DSE_DELETE, mySqlTableInfo.getDeleteTableList());
-                    recordTableInfo(writer, mapperClassName, mapperMethodName, MySqlStatementEnum.DSE_ALTER, mySqlTableInfo.getAlterTableList());
-                    recordTableInfo(writer, mapperClassName, mapperMethodName, MySqlStatementEnum.DSE_TRUNCATE, mySqlTableInfo.getTruncateTableList());
-                    recordTableInfo(writer, mapperClassName, mapperMethodName, MySqlStatementEnum.DSE_CREATE, mySqlTableInfo.getCreateTableList());
-                    recordTableInfo(writer, mapperClassName, mapperMethodName, MySqlStatementEnum.DSE_DROP, mySqlTableInfo.getDropTableList());
+                    recordTableInfo(writer, mapperClassName, mapperMethodName, MySqlStatementEnum.DSSE_SELECT, mySqlTableInfo.getSelectTableList());
+                    recordTableInfo(writer, mapperClassName, mapperMethodName, MySqlStatementEnum.DSSE_SELECT_4_UPDATE, mySqlTableInfo.getSelect4UpdateTableList());
+                    recordTableInfo(writer, mapperClassName, mapperMethodName, MySqlStatementEnum.DSSE_INSERT, mySqlTableInfo.getInsertTableList());
+                    recordTableInfo(writer, mapperClassName, mapperMethodName, MySqlStatementEnum.DSSE_INSERT_IGNORE, mySqlTableInfo.getInsertIgnoreTableList());
+                    recordTableInfo(writer, mapperClassName, mapperMethodName, MySqlStatementEnum.DSSE_INSERT_OR_UPDATE, mySqlTableInfo.getInsertOrUpdateTableList());
+                    recordTableInfo(writer, mapperClassName, mapperMethodName, MySqlStatementEnum.DSSE_REPLACE, mySqlTableInfo.getReplaceTableList());
+                    recordTableInfo(writer, mapperClassName, mapperMethodName, MySqlStatementEnum.DSSE_UPDATE, mySqlTableInfo.getUpdateTableList());
+                    recordTableInfo(writer, mapperClassName, mapperMethodName, MySqlStatementEnum.DSSE_DELETE, mySqlTableInfo.getDeleteTableList());
+                    recordTableInfo(writer, mapperClassName, mapperMethodName, MySqlStatementEnum.DSSE_ALTER, mySqlTableInfo.getAlterTableList());
+                    recordTableInfo(writer, mapperClassName, mapperMethodName, MySqlStatementEnum.DSSE_TRUNCATE, mySqlTableInfo.getTruncateTableList());
+                    recordTableInfo(writer, mapperClassName, mapperMethodName, MySqlStatementEnum.DSSE_CREATE, mySqlTableInfo.getCreateTableList());
+                    recordTableInfo(writer, mapperClassName, mapperMethodName, MySqlStatementEnum.DSSE_DROP, mySqlTableInfo.getDropTableList());
                 }
             }
         } catch (Exception e) {
@@ -88,7 +88,7 @@ public class Entry4GetMyBatisMySqlTableDetailInfo extends AbstractEntry {
         for (String table : tableList) {
             stringBuilder.append(mapperClassName).append(MyBatisTableParserConstants.FILE_COLUMN_SEPARATOR)
                     .append(mapperMethodName).append(MyBatisTableParserConstants.FILE_COLUMN_SEPARATOR)
-                    .append(mySqlStatementEnum.getStatement()).append(MyBatisTableParserConstants.FILE_COLUMN_SEPARATOR)
+                    .append(mySqlStatementEnum.getType()).append(MyBatisTableParserConstants.FILE_COLUMN_SEPARATOR)
                     .append(table).append(MyBatisTableParserConstants.NEW_LINE);
         }
         writer.write(stringBuilder.toString());

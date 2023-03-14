@@ -6,9 +6,9 @@ import java.util.Map;
 /**
  * @author adrninistrator
  * @date 2022/12/18
- * @description: MyBatis的sql信息
+ * @description: 使用MySQL时MyBatis的sql信息
  */
-public class MyBatisSqlInfo {
+public class MyBatisMySqlInfo {
     // mapper接口类名
     private String mapperInterfaceName;
 

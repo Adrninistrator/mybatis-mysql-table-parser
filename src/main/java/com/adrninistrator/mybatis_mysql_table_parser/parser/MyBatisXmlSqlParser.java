@@ -1,6 +1,6 @@
 package com.adrninistrator.mybatis_mysql_table_parser.parser;
 
-import com.adrninistrator.mybatis_mysql_table_parser.dto.MyBatisSqlInfo;
+import com.adrninistrator.mybatis_mysql_table_parser.dto.MyBatisMySqlInfo;
 import com.adrninistrator.mybatis_mysql_table_parser.token_handler.EmptyTokenHandler;
 import com.adrninistrator.mybatis_mysql_table_parser.token_handler.QuestionMarkTokenHandler;
 import com.adrninistrator.mybatis_mysql_table_parser.xml.NoOpEntityResolver;
@@ -111,7 +111,7 @@ public class MyBatisXmlSqlParser {
      * @throws IOException
      * @throws JDOMException
      */
-    public MyBatisSqlInfo parseMybatisXmlSql(InputStream inputStream, String filePath) throws IOException, JDOMException {
+    public MyBatisMySqlInfo parseMybatisXmlSql(InputStream inputStream, String filePath) throws IOException, JDOMException {
         Document document = saxBuilder.build(inputStream);
 
         Element root = document.getRootElement();
@@ -165,9 +165,9 @@ public class MyBatisXmlSqlParser {
     }
 
     // 获取MyBatis XML文件中的sql语句
-    private MyBatisSqlInfo handleMybatisXml(Element root, String namespace, Map<String, String> sqlElementMap) {
+    private MyBatisMySqlInfo handleMybatisXml(Element root, String namespace, Map<String, String> sqlElementMap) {
         Map<String, List<String>> sqlMap = new HashMap<>();
-        MyBatisSqlInfo myBatisSqlInfo = new MyBatisSqlInfo();
+        MyBatisMySqlInfo myBatisSqlInfo = new MyBatisMySqlInfo();
         myBatisSqlInfo.setMapperInterfaceName(namespace);
         myBatisSqlInfo.setFullSqlMap(sqlMap);
 

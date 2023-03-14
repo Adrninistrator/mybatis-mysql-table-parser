@@ -61,6 +61,9 @@ public class MySqlTableInfo {
     // drop table语句的表名列表
     private final List<String> dropTableList = new ArrayList<>();
 
+    // 使用MySQL时执行写操作的数据库表信息
+    private MySQLWriteTableInfo mySQLWriteTableInfo;
+
     // 解析失败
     private boolean parseFail = false;
 
@@ -72,6 +75,7 @@ public class MySqlTableInfo {
      */
     public static void copyUpdateTableList(MySqlTableInfo src, MySqlTableInfo dest) {
         dest.updateTableList = src.updateTableList;
+        dest.mySQLWriteTableInfo = src.mySQLWriteTableInfo;
     }
 
     /**
@@ -82,42 +86,46 @@ public class MySqlTableInfo {
      */
     public static void copyDeleteTableList(MySqlTableInfo src, MySqlTableInfo dest) {
         dest.deleteTableList = src.deleteTableList;
+        dest.mySQLWriteTableInfo = src.mySQLWriteTableInfo;
     }
 
     /**
      * 添加所有的表名列表，不添加重复项
      *
-     * @param src  源对象
      * @param dest 目标对象
      */
-    public static void addAllTables(MySqlTableInfo src, MySqlTableInfo dest) {
+    public void addAllTables(MySqlTableInfo dest) {
         Map<String, Set<String>> usedStoredTableMap = dest.storedTableMap;
-
-        addAllTableList(MySqlStatementEnum.DSE_SELECT, src.selectTableList, dest.selectTableList, usedStoredTableMap);
-        addAllTableList(MySqlStatementEnum.DSE_SELECT_4_UPDATE, src.select4UpdateTableList, dest.select4UpdateTableList, usedStoredTableMap);
-        addAllTableList(MySqlStatementEnum.DSE_INSERT, src.insertTableList, dest.insertTableList, usedStoredTableMap);
-        addAllTableList(MySqlStatementEnum.DSE_INSERT_IGNORE, src.insertIgnoreTableList, dest.insertIgnoreTableList, usedStoredTableMap);
-        addAllTableList(MySqlStatementEnum.DSE_INSERT_OR_UPDATE, src.insertOrUpdateTableList, dest.insertOrUpdateTableList, usedStoredTableMap);
-        addAllTableList(MySqlStatementEnum.DSE_REPLACE, src.replaceTableList, dest.replaceTableList, usedStoredTableMap);
-        addAllTableList(MySqlStatementEnum.DSE_UPDATE, src.updateTableList, dest.updateTableList, usedStoredTableMap);
-        addAllTableList(MySqlStatementEnum.DSE_DELETE, src.deleteTableList, dest.deleteTableList, usedStoredTableMap);
-        addAllTableList(MySqlStatementEnum.DSE_ALTER, src.alterTableList, dest.alterTableList, usedStoredTableMap);
-        addAllTableList(MySqlStatementEnum.DSE_TRUNCATE, src.truncateTableList, dest.truncateTableList, usedStoredTableMap);
-        addAllTableList(MySqlStatementEnum.DSE_CREATE, src.createTableList, dest.createTableList, usedStoredTableMap);
-        addAllTableList(MySqlStatementEnum.DSE_DROP, src.dropTableList, dest.dropTableList, usedStoredTableMap);
+        addAllTableList(MySqlStatementEnum.DSSE_SELECT, selectTableList, dest.selectTableList, usedStoredTableMap);
+        addAllTableList(MySqlStatementEnum.DSSE_SELECT_4_UPDATE, select4UpdateTableList, dest.select4UpdateTableList, usedStoredTableMap);
+        addAllTableList(MySqlStatementEnum.DSSE_INSERT, insertTableList, dest.insertTableList, usedStoredTableMap);
+        addAllTableList(MySqlStatementEnum.DSSE_INSERT_IGNORE, insertIgnoreTableList, dest.insertIgnoreTableList, usedStoredTableMap);
+        addAllTableList(MySqlStatementEnum.DSSE_INSERT_OR_UPDATE, insertOrUpdateTableList, dest.insertOrUpdateTableList, usedStoredTableMap);
+        addAllTableList(MySqlStatementEnum.DSSE_REPLACE, replaceTableList, dest.replaceTableList, usedStoredTableMap);
+        addAllTableList(MySqlStatementEnum.DSSE_UPDATE, updateTableList, dest.updateTableList, usedStoredTableMap);
+        addAllTableList(MySqlStatementEnum.DSSE_DELETE, deleteTableList, dest.deleteTableList, usedStoredTableMap);
+        addAllTableList(MySqlStatementEnum.DSSE_ALTER, alterTableList, dest.alterTableList, usedStoredTableMap);
+        addAllTableList(MySqlStatementEnum.DSSE_TRUNCATE, truncateTableList, dest.truncateTableList, usedStoredTableMap);
+        addAllTableList(MySqlStatementEnum.DSSE_CREATE, createTableList, dest.createTableList, usedStoredTableMap);
+        addAllTableList(MySqlStatementEnum.DSSE_DROP, dropTableList, dest.dropTableList, usedStoredTableMap);
     }
 
-    private static void addAllTableList(MySqlStatementEnum mySqlStatementEnum, List<String> srcTableList, List<String> destTableList, Map<String, Set<String>> usedStoredTableMap) {
+    private void addAllTableList(MySqlStatementEnum mySqlStatementEnum, List<String> srcTableList, List<String> destTableList, Map<String, Set<String>> usedStoredTableMap) {
         for (String srcTable : srcTableList) {
             addTable(mySqlStatementEnum, srcTable, destTableList, usedStoredTableMap);
         }
     }
 
-    private static void addTable(MySqlStatementEnum mySqlStatementEnum, String tableName, List<String> tableList, Map<String, Set<String>> usedStoredTableMap) {
-        Set<String> storedTableSet = usedStoredTableMap.computeIfAbsent(mySqlStatementEnum.getStatement(), k -> new HashSet<>());
+    private void addTable(MySqlStatementEnum mySqlStatementEnum, String tableName, List<String> tableList, Map<String, Set<String>> usedStoredTableMap) {
+        Set<String> storedTableSet = usedStoredTableMap.computeIfAbsent(mySqlStatementEnum.getType(), k -> new HashSet<>());
         // 避免重复添加表名
         if (storedTableSet.add(tableName)) {
             tableList.add(tableName);
+        }
+
+        if (mySqlStatementEnum.isWriteDml()) {
+            // 当前SQL语句为写操作DML，记录
+            mySQLWriteTableInfo = new MySQLWriteTableInfo(mySqlStatementEnum, tableName);
         }
     }
 
@@ -130,51 +138,51 @@ public class MySqlTableInfo {
     }
 
     public void addSelectTable(String tableName) {
-        addTable(MySqlStatementEnum.DSE_SELECT, tableName, selectTableList, storedTableMap);
+        addTable(MySqlStatementEnum.DSSE_SELECT, tableName, selectTableList, storedTableMap);
     }
 
     public void addSelect4UpdateTable(String tableName) {
-        addTable(MySqlStatementEnum.DSE_SELECT_4_UPDATE, tableName, select4UpdateTableList, storedTableMap);
+        addTable(MySqlStatementEnum.DSSE_SELECT_4_UPDATE, tableName, select4UpdateTableList, storedTableMap);
     }
 
     public void addInsertTable(String tableName) {
-        addTable(MySqlStatementEnum.DSE_INSERT, tableName, insertTableList, storedTableMap);
+        addTable(MySqlStatementEnum.DSSE_INSERT, tableName, insertTableList, storedTableMap);
     }
 
     public void addInsertIgnoreTable(String tableName) {
-        addTable(MySqlStatementEnum.DSE_INSERT_IGNORE, tableName, insertIgnoreTableList, storedTableMap);
+        addTable(MySqlStatementEnum.DSSE_INSERT_IGNORE, tableName, insertIgnoreTableList, storedTableMap);
     }
 
     public void addInsertOrUpdateTable(String tableName) {
-        addTable(MySqlStatementEnum.DSE_INSERT_OR_UPDATE, tableName, insertOrUpdateTableList, storedTableMap);
+        addTable(MySqlStatementEnum.DSSE_INSERT_OR_UPDATE, tableName, insertOrUpdateTableList, storedTableMap);
     }
 
     public void addReplaceIntoTable(String tableName) {
-        addTable(MySqlStatementEnum.DSE_REPLACE, tableName, replaceTableList, storedTableMap);
+        addTable(MySqlStatementEnum.DSSE_REPLACE, tableName, replaceTableList, storedTableMap);
     }
 
     public void addUpdateTable(String tableName) {
-        addTable(MySqlStatementEnum.DSE_UPDATE, tableName, updateTableList, storedTableMap);
+        addTable(MySqlStatementEnum.DSSE_UPDATE, tableName, updateTableList, storedTableMap);
     }
 
     public void addDeleteTable(String tableName) {
-        addTable(MySqlStatementEnum.DSE_DELETE, tableName, deleteTableList, storedTableMap);
+        addTable(MySqlStatementEnum.DSSE_DELETE, tableName, deleteTableList, storedTableMap);
     }
 
     public void addAlterTable(String tableName) {
-        addTable(MySqlStatementEnum.DSE_ALTER, tableName, alterTableList, storedTableMap);
+        addTable(MySqlStatementEnum.DSSE_ALTER, tableName, alterTableList, storedTableMap);
     }
 
     public void addTruncateTable(String tableName) {
-        addTable(MySqlStatementEnum.DSE_TRUNCATE, tableName, truncateTableList, storedTableMap);
+        addTable(MySqlStatementEnum.DSSE_TRUNCATE, tableName, truncateTableList, storedTableMap);
     }
 
     public void addCreateTable(String tableName) {
-        addTable(MySqlStatementEnum.DSE_CREATE, tableName, createTableList, storedTableMap);
+        addTable(MySqlStatementEnum.DSSE_CREATE, tableName, createTableList, storedTableMap);
     }
 
     public void addDropTable(String tableName) {
-        addTable(MySqlStatementEnum.DSE_DROP, tableName, dropTableList, storedTableMap);
+        addTable(MySqlStatementEnum.DSSE_DROP, tableName, dropTableList, storedTableMap);
     }
 
     private void addTableList4ToString(StringBuilder stringBuilder, String listName, List<String> list) {
@@ -203,6 +211,9 @@ public class MySqlTableInfo {
         addTableList4ToString(stringBuilder, "truncate", truncateTableList);
         addTableList4ToString(stringBuilder, "create", createTableList);
         addTableList4ToString(stringBuilder, "drop", dropTableList);
+        if (mySQLWriteTableInfo != null) {
+            stringBuilder.append(" write: ").append(mySQLWriteTableInfo);
+        }
         return stringBuilder.toString();
     }
 
@@ -252,5 +263,9 @@ public class MySqlTableInfo {
 
     public List<String> getDropTableList() {
         return dropTableList;
+    }
+
+    public MySQLWriteTableInfo getMySQLWriteTableInfo() {
+        return mySQLWriteTableInfo;
     }
 }

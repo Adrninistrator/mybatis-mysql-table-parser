@@ -1,7 +1,7 @@
 package com.adrninistrator.mybatis_mysql_table_parser.entry;
 
 import com.adrninistrator.mybatis_mysql_table_parser.common.MyBatisTableParserConstants;
-import com.adrninistrator.mybatis_mysql_table_parser.dto.MyBatisSqlInfo;
+import com.adrninistrator.mybatis_mysql_table_parser.dto.MyBatisMySqlInfo;
 import com.adrninistrator.mybatis_mysql_table_parser.dto.MySqlTableInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -47,8 +47,8 @@ public class Entry4GetMyBatisMySqlTableName extends AbstractEntry {
             // 用于保存所有的表名
             Set<String> allTableSet = new HashSet<>();
 
-            for (Map.Entry<String, MyBatisSqlInfo> entry : myBatisSqlInfoMap.entrySet()) {
-                MyBatisSqlInfo myBatisSqlInfo = entry.getValue();
+            for (Map.Entry<String, MyBatisMySqlInfo> entry : myBatisSqlInfoMap.entrySet()) {
+                MyBatisMySqlInfo myBatisSqlInfo = entry.getValue();
                 Map<String, MySqlTableInfo> mySqlTableInfoMap = myBatisSqlInfo.getMySqlTableInfoMap();
                 for (Map.Entry<String, MySqlTableInfo> entry1 : mySqlTableInfoMap.entrySet()) {
                     MySqlTableInfo mySqlTableInfo = entry1.getValue();

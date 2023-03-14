@@ -2,7 +2,7 @@ package com.adrninistrator.mybatis_mysql_table_parser.entry;
 
 import com.adrninistrator.mybatis_mysql_table_parser.common.MyBatisTableParserConstants;
 import com.adrninistrator.mybatis_mysql_table_parser.common.enums.MySqlStatementEnum;
-import com.adrninistrator.mybatis_mysql_table_parser.dto.MyBatisSqlInfo;
+import com.adrninistrator.mybatis_mysql_table_parser.dto.MyBatisMySqlInfo;
 import com.adrninistrator.mybatis_mysql_table_parser.dto.MySqlTableInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -48,28 +48,28 @@ public class Entry4GetMyBatisMySqlTableInfo extends AbstractEntry {
             // 用于保存所有sql语句类型的表名
             MySqlTableInfo allMySqlTableInfo = new MySqlTableInfo();
 
-            for (Map.Entry<String, MyBatisSqlInfo> entry : myBatisSqlInfoMap.entrySet()) {
-                MyBatisSqlInfo myBatisSqlInfo = entry.getValue();
+            for (Map.Entry<String, MyBatisMySqlInfo> entry : myBatisSqlInfoMap.entrySet()) {
+                MyBatisMySqlInfo myBatisSqlInfo = entry.getValue();
                 Map<String, MySqlTableInfo> mySqlTableInfoMap = myBatisSqlInfo.getMySqlTableInfoMap();
                 for (Map.Entry<String, MySqlTableInfo> entry1 : mySqlTableInfoMap.entrySet()) {
                     MySqlTableInfo mySqlTableInfo = entry1.getValue();
                     // 添加所有的表名列表，不添加重复项
-                    MySqlTableInfo.addAllTables(mySqlTableInfo, allMySqlTableInfo);
+                    mySqlTableInfo.addAllTables(allMySqlTableInfo);
                 }
             }
 
-            recordTableInfo(writer, MySqlStatementEnum.DSE_SELECT, allMySqlTableInfo.getSelectTableList());
-            recordTableInfo(writer, MySqlStatementEnum.DSE_SELECT_4_UPDATE, allMySqlTableInfo.getSelect4UpdateTableList());
-            recordTableInfo(writer, MySqlStatementEnum.DSE_INSERT, allMySqlTableInfo.getInsertTableList());
-            recordTableInfo(writer, MySqlStatementEnum.DSE_INSERT_IGNORE, allMySqlTableInfo.getInsertIgnoreTableList());
-            recordTableInfo(writer, MySqlStatementEnum.DSE_INSERT_OR_UPDATE, allMySqlTableInfo.getInsertOrUpdateTableList());
-            recordTableInfo(writer, MySqlStatementEnum.DSE_REPLACE, allMySqlTableInfo.getReplaceTableList());
-            recordTableInfo(writer, MySqlStatementEnum.DSE_UPDATE, allMySqlTableInfo.getUpdateTableList());
-            recordTableInfo(writer, MySqlStatementEnum.DSE_DELETE, allMySqlTableInfo.getDeleteTableList());
-            recordTableInfo(writer, MySqlStatementEnum.DSE_ALTER, allMySqlTableInfo.getAlterTableList());
-            recordTableInfo(writer, MySqlStatementEnum.DSE_TRUNCATE, allMySqlTableInfo.getTruncateTableList());
-            recordTableInfo(writer, MySqlStatementEnum.DSE_CREATE, allMySqlTableInfo.getCreateTableList());
-            recordTableInfo(writer, MySqlStatementEnum.DSE_DROP, allMySqlTableInfo.getDropTableList());
+            recordTableInfo(writer, MySqlStatementEnum.DSSE_SELECT, allMySqlTableInfo.getSelectTableList());
+            recordTableInfo(writer, MySqlStatementEnum.DSSE_SELECT_4_UPDATE, allMySqlTableInfo.getSelect4UpdateTableList());
+            recordTableInfo(writer, MySqlStatementEnum.DSSE_INSERT, allMySqlTableInfo.getInsertTableList());
+            recordTableInfo(writer, MySqlStatementEnum.DSSE_INSERT_IGNORE, allMySqlTableInfo.getInsertIgnoreTableList());
+            recordTableInfo(writer, MySqlStatementEnum.DSSE_INSERT_OR_UPDATE, allMySqlTableInfo.getInsertOrUpdateTableList());
+            recordTableInfo(writer, MySqlStatementEnum.DSSE_REPLACE, allMySqlTableInfo.getReplaceTableList());
+            recordTableInfo(writer, MySqlStatementEnum.DSSE_UPDATE, allMySqlTableInfo.getUpdateTableList());
+            recordTableInfo(writer, MySqlStatementEnum.DSSE_DELETE, allMySqlTableInfo.getDeleteTableList());
+            recordTableInfo(writer, MySqlStatementEnum.DSSE_ALTER, allMySqlTableInfo.getAlterTableList());
+            recordTableInfo(writer, MySqlStatementEnum.DSSE_TRUNCATE, allMySqlTableInfo.getTruncateTableList());
+            recordTableInfo(writer, MySqlStatementEnum.DSSE_CREATE, allMySqlTableInfo.getCreateTableList());
+            recordTableInfo(writer, MySqlStatementEnum.DSSE_DROP, allMySqlTableInfo.getDropTableList());
         } catch (Exception e) {
             logger.error("error ", e);
         }
@@ -83,7 +83,7 @@ public class Entry4GetMyBatisMySqlTableInfo extends AbstractEntry {
         StringBuilder stringBuilder = new StringBuilder();
         Collections.sort(tableList);
         for (String table : tableList) {
-            stringBuilder.append(mySqlStatementEnum.getStatement()).append(MyBatisTableParserConstants.FILE_COLUMN_SEPARATOR)
+            stringBuilder.append(mySqlStatementEnum.getType()).append(MyBatisTableParserConstants.FILE_COLUMN_SEPARATOR)
                     .append(table).append(MyBatisTableParserConstants.NEW_LINE);
         }
         writer.write(stringBuilder.toString());

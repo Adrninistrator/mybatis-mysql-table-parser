@@ -2,7 +2,7 @@ apply plugin: 'eclipse'
 apply plugin: 'java'
 
 group 'com.github.adrninistrator'
-version = "0.0.3"
+version = "0.0.4"
 def projectName = "mybatis-mysql-table-parser"
 description = "${projectName}"
 sourceCompatibility = 1.8

@@ -30,7 +30,7 @@ drop table
 - Gradle
 
 ```
-testImplementation 'com.github.adrninistrator:mybatis-mysql-table-parser:0.0.3'
+testImplementation 'com.github.adrninistrator:mybatis-mysql-table-parser:0.0.4'
 ```
 
 - Maven
@@ -39,7 +39,7 @@ testImplementation 'com.github.adrninistrator:mybatis-mysql-table-parser:0.0.3'
 <dependency>
   <groupId>com.github.adrninistrator</groupId>
   <artifactId>mybatis-mysql-table-parser</artifactId>
-  <version>0.0.3</version>
+  <version>0.0.4</version>
 </dependency>
 ```
 
@@ -48,7 +48,7 @@ testImplementation 'com.github.adrninistrator:mybatis-mysql-table-parser:0.0.3'
 `由于Maven间接依赖的组件版本不会自动使用最大的版本号，因此可能需要在项目中手工指定mybatis-mysql-table-parser依赖组件的版本号，避免因为依赖组件版本不一致导致问题，可通过mybatis-mysql-table-parser的pom文件的dependencies元素查看依赖组件版本`
 
 ```
-https://repo1.maven.org/maven2/com/github/adrninistrator/mybatis-mysql-table-parser/0.0.3/mybatis-mysql-table-parser-0.0.3.pom
+https://repo1.maven.org/maven2/com/github/adrninistrator/mybatis-mysql-table-parser/0.0.4/mybatis-mysql-table-parser-0.0.4.pom
 ```
 
 # 3. 项目地址
