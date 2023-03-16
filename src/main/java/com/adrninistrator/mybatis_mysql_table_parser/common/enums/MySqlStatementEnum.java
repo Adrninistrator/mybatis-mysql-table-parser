@@ -6,18 +6,18 @@ package com.adrninistrator.mybatis_mysql_table_parser.common.enums;
  * @description: MySql语句枚举
  */
 public enum MySqlStatementEnum {
-    DSSE_SELECT("select", "s", true, false),
+    DSSE_SELECT("select", "select", true, false),
     // select for update当作数据库写操作
-    DSSE_SELECT_4_UPDATE("select_for_update", "su", true, true),
-    DSSE_INSERT("insert_into", "i", true, true),
-    DSSE_INSERT_IGNORE("insert_ignore_into", "ii", true, true),
-    DSSE_INSERT_OR_UPDATE("insert_into_on_duplicate_key_update", "iu", true, true),
-    DSSE_REPLACE("replace_into", "r", true, true),
-    DSSE_UPDATE("update", "u", true, true),
-    DSSE_DELETE("delete", "del", true, true),
-    DSSE_ALTER("alter_table", "a", false, false),
-    DSSE_TRUNCATE("truncate_table", "t", false, false),
-    DSSE_CREATE("create_table", "c", false, false),
+    DSSE_SELECT_4_UPDATE("select_for_update", "select4update", true, true),
+    DSSE_INSERT("insert_into", "insert", true, true),
+    DSSE_INSERT_IGNORE("insert_ignore_into", "insert_ignore", true, true),
+    DSSE_INSERT_OR_UPDATE("insert_into_on_duplicate_key_update", "insert_update", true, true),
+    DSSE_REPLACE("replace_into", "replace", true, true),
+    DSSE_UPDATE("update", "update", true, true),
+    DSSE_DELETE("delete", "delete", true, true),
+    DSSE_ALTER("alter_table", "alter", false, false),
+    DSSE_TRUNCATE("truncate_table", "truncate", false, false),
+    DSSE_CREATE("create_table", "create", false, false),
     DSSE_DROP("drop_table", "drop", false, false),
     DSSE_ILLEGAL("-", "-", false, false);
 
