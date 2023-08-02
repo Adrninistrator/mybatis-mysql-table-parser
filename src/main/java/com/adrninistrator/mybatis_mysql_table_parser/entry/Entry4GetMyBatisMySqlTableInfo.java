@@ -43,7 +43,7 @@ public class Entry4GetMyBatisMySqlTableInfo extends AbstractEntry {
             writer.write(fileHeader);
 
             // 处理目录
-            handleDirectory(dirPath);
+            Map<String, MyBatisMySqlInfo> myBatisSqlInfoMap = handleDirectory(dirPath);
 
             // 用于保存所有sql语句类型的表名
             MySqlTableInfo allMySqlTableInfo = new MySqlTableInfo();
@@ -71,7 +71,7 @@ public class Entry4GetMyBatisMySqlTableInfo extends AbstractEntry {
             recordTableInfo(writer, MySqlStatementEnum.DSSE_CREATE, allMySqlTableInfo.getCreateTableList());
             recordTableInfo(writer, MySqlStatementEnum.DSSE_DROP, allMySqlTableInfo.getDropTableList());
         } catch (Exception e) {
-            logger.error("error ", e);
+            logger.error("解析sql语句出现异常 ", e);
         }
     }
 

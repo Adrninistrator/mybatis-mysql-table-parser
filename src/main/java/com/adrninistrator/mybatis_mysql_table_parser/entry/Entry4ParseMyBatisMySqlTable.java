@@ -29,9 +29,7 @@ public class Entry4ParseMyBatisMySqlTable extends AbstractEntry {
         }
 
         // 处理目录
-        handleDirectory(dirPath);
-
-        return myBatisSqlInfoMap;
+        return handleDirectory(dirPath);
     }
 
     /**
@@ -53,7 +51,7 @@ public class Entry4ParseMyBatisMySqlTable extends AbstractEntry {
     /**
      * 解析文件中MyBatis XML中涉及的MySQL表名
      *
-     * @param inputStream 需要解析的文件内容对应的InputStream
+     * @param inputStream 需要解析的文件内容对应的InputStream，流使用完毕后需要调用方关闭
      * @param filePath    需要解析的文件路径，仅用于打印日志
      * @return MyBatis的sql信息，说明见AbstractEntry类的myBatisSqlInfoMap字段
      */

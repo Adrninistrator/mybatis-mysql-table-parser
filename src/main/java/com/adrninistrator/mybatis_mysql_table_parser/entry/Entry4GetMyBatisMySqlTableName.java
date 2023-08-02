@@ -42,7 +42,7 @@ public class Entry4GetMyBatisMySqlTableName extends AbstractEntry {
 
         try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFilePath), StandardCharsets.UTF_8))) {
             // 处理目录
-            handleDirectory(dirPath);
+            Map<String, MyBatisMySqlInfo> myBatisSqlInfoMap = handleDirectory(dirPath);
 
             // 用于保存所有的表名
             Set<String> allTableSet = new HashSet<>();
@@ -71,7 +71,7 @@ public class Entry4GetMyBatisMySqlTableName extends AbstractEntry {
             // 在文件中记录表名信息
             recordTableInfo(writer, allTableSet);
         } catch (Exception e) {
-            logger.error("error ", e);
+            logger.error("解析sql语句出现异常 ", e);
         }
     }
 

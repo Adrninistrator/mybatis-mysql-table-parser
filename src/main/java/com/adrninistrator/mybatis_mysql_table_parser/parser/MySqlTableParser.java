@@ -120,7 +120,7 @@ public class MySqlTableParser {
                 logger.error("暂未处理的SQLStatement类型 {}", sqlStatement.getClass().getName());
             }
         } catch (Exception e) {
-            logger.error("error {} ", fullSql, e);
+            logger.error("解析sql语句出现异常 {} ", fullSql, e);
             mySqlTableInfo.setParseFail(true);
         }
         return mySqlTableInfo;

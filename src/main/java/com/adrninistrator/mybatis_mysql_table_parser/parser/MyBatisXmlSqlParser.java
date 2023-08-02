@@ -159,7 +159,7 @@ public class MyBatisXmlSqlParser {
                 }
                 sqlElementMap.put(id, fullSqlList.get(0));
             } catch (Exception e) {
-                logger.error("error ", e);
+                logger.error("解析sql语句出现异常 ", e);
             }
         }
     }
@@ -171,35 +171,65 @@ public class MyBatisXmlSqlParser {
         myBatisSqlInfo.setMapperInterfaceName(namespace);
         myBatisSqlInfo.setFullSqlMap(sqlMap);
 
+        boolean resultMapHandled = false;
         for (Element element : root.getChildren()) {
-            if (!StringUtils.equalsAny(element.getName(), "select", "insert", "update", "delete")) {
-                continue;
-            }
+            String elementName = element.getName();
+            if ("resultMap".equals(elementName) && !resultMapHandled) {
+                // 处理resultMap元素，不判断resultMap元素的id，因为存在id非BaseResultMap的情况
+                handleResultMapElement(myBatisSqlInfo, element);
+                resultMapHandled = true;
+            } else if (StringUtils.equalsAny(elementName, "select", "insert", "update", "delete")) {
+                try {
+                    // 处理sql语句
+                    String sqlId = element.getAttributeValue("id");
+                    List<String> sqlFragmentList = new ArrayList<>();
 
-            try {
-                // 处理sql语句
-                String sqlId = element.getAttributeValue("id");
-                List<String> sqlFragmentList = new ArrayList<>();
+                    // 处理selectKey元素，order=BEFORE
+                    boolean existsSelectKey = handleSelectKeyElement(element, sqlFragmentList, sqlElementMap, true);
 
-                // 处理selectKey元素，order=BEFORE
-                boolean existsSelectKey = handleSelectKeyElement(element, sqlFragmentList, sqlElementMap, true);
+                    // 获取sql元素的content中的sql语句
+                    getSqlFromElementContent(element, sqlFragmentList, sqlElementMap);
 
-                // 获取sql元素的content中的sql语句
-                getSqlFromElementContent(element, sqlFragmentList, sqlElementMap);
+                    if (existsSelectKey) {
+                        // 处理selectKey元素，order=AFTER
+                        handleSelectKeyElement(element, sqlFragmentList, sqlElementMap, false);
+                    }
 
-                if (existsSelectKey) {
-                    // 处理selectKey元素，order=AFTER
-                    handleSelectKeyElement(element, sqlFragmentList, sqlElementMap, false);
+                    // 将sql片段列表拼接为多条完整sql语句
+                    List<String> fullSqlList = appendSqlFragment(sqlFragmentList, false);
+                    sqlMap.put(sqlId, fullSqlList);
+                } catch (Exception e) {
+                    logger.error("解析sql语句出现异常 ", e);
                 }
-
-                // 将sql片段列表拼接为多条完整sql语句
-                List<String> fullSqlList = appendSqlFragment(sqlFragmentList, false);
-                sqlMap.put(sqlId, fullSqlList);
-            } catch (Exception e) {
-                logger.error("error ", e);
             }
         }
         return myBatisSqlInfo;
+    }
+
+    // 处理resultMap元素
+    private void handleResultMapElement(MyBatisMySqlInfo myBatisSqlInfo, Element element) {
+        // 记录对应的Entity类名
+        myBatisSqlInfo.setEntityClassName(element.getAttributeValue("type"));
+
+        Map<String, String> entityAndTableColumnNameMap = new HashMap<>();
+        Map<String, String> tableAndEntityColumnNameMap = new HashMap<>();
+        myBatisSqlInfo.setEntityAndTableColumnNameMap(entityAndTableColumnNameMap);
+        myBatisSqlInfo.setTableAndEntityColumnNameMap(tableAndEntityColumnNameMap);
+        for (Element childElement : element.getChildren()) {
+            if (!StringUtils.equalsAny(childElement.getName(), "id", "result")) {
+                continue;
+            }
+            // 处理id、result元素
+            String column = childElement.getAttributeValue("column");
+            String property = childElement.getAttributeValue("property");
+            if (StringUtils.isNoneBlank(column, property)) {
+                // 记录Entity类字段名与对应的数据库表字段名
+                entityAndTableColumnNameMap.put(property, column);
+
+                // 记录数据库表字段名与对应的entity类字段名
+                tableAndEntityColumnNameMap.put(column, property);
+            }
+        }
     }
 
     // 获取sql元素的content中的sql语句

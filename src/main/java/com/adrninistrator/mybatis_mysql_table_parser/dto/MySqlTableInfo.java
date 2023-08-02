@@ -25,6 +25,9 @@ public class MySqlTableInfo {
      */
     private final Map<String, Set<String>> storedTableMap = new HashMap<>();
 
+    // 所有语句的表名集合
+    private final Set<String> allTableSet = new HashSet<>();
+
     // select语句的表名列表
     private final List<String> selectTableList = new ArrayList<>();
 
@@ -123,6 +126,8 @@ public class MySqlTableInfo {
             tableList.add(tableName);
         }
 
+        allTableSet.add(tableName);
+
         if (mySqlStatementEnum.isWriteDml()) {
             // 当前SQL语句为写操作DML，记录
             mySQLWriteTableInfo = new MySQLWriteTableInfo(mySqlStatementEnum, tableName);
@@ -215,6 +220,10 @@ public class MySqlTableInfo {
             stringBuilder.append(" write: ").append(mySQLWriteTableInfo);
         }
         return stringBuilder.toString();
+    }
+
+    public Set<String> getAllTableSet() {
+        return allTableSet;
     }
 
     public List<String> getSelectTableList() {

@@ -11,6 +11,8 @@ public class MyBatisTableParserConstants {
 
     public static final String NEW_LINE = "\n";
 
+    public static final String FLAG_INSERT = "insert";
+
     private MyBatisTableParserConstants() {
         throw new IllegalStateException("illegal");
     }

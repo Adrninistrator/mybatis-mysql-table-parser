@@ -30,7 +30,7 @@ drop table
 - Gradle
 
 ```
-testImplementation 'com.github.adrninistrator:mybatis-mysql-table-parser:0.0.5'
+testImplementation 'com.github.adrninistrator:mybatis-mysql-table-parser:0.0.6'
 ```
 
 - Maven
@@ -39,7 +39,7 @@ testImplementation 'com.github.adrninistrator:mybatis-mysql-table-parser:0.0.5'
 <dependency>
   <groupId>com.github.adrninistrator</groupId>
   <artifactId>mybatis-mysql-table-parser</artifactId>
-  <version>0.0.5</version>
+  <version>0.0.6</version>
 </dependency>
 ```
 
@@ -48,7 +48,7 @@ testImplementation 'com.github.adrninistrator:mybatis-mysql-table-parser:0.0.5'
 `由于Maven间接依赖的组件版本不会自动使用最大的版本号，因此可能需要在项目中手工指定mybatis-mysql-table-parser依赖组件的版本号，避免因为依赖组件版本不一致导致问题，可通过mybatis-mysql-table-parser的pom文件的dependencies元素查看依赖组件版本`
 
 ```
-https://repo1.maven.org/maven2/com/github/adrninistrator/mybatis-mysql-table-parser/0.0.5/mybatis-mysql-table-parser-0.0.5.pom
+https://repo1.maven.org/maven2/com/github/adrninistrator/mybatis-mysql-table-parser/0.0.6/mybatis-mysql-table-parser-0.0.6.pom
 ```
 
 # 3. 项目地址
@@ -141,6 +141,8 @@ test_table3
 
 # 7. 获取解析结果（在Java代码中使用）
 
+## 7.1. 使用方式
+
 以上的使用方式会将MyBatis XML文件中使用的数据库表名信息写入文件，假如需要在Java代码中获取以上解析结果，可以执行以下类：
 
 ```java
@@ -156,3 +158,19 @@ Entry4ParseMyBatisMySqlTable entry4ParseMyBatisMySqlTable = new Entry4ParseMyBat
 Map<String, MyBatisSqlInfo> myBatisSqlInfoMap = entry4ParseMyBatisMySqlTable.parseDirectory("D:/test/test_dir");
 MyBatisSqlInfo myBatisSqlInfo = entry4ParseMyBatisMySqlTable.parseFile("D:/test/test_dir/test.xml");
 ```
+
+## 7.2. 结果说明
+
+在Java代码中使用获取解析结果功能时，除了支持获取以上会写入到文件的信息外，还可以获取到未写入到文件中的其他信息
+
+获取结果可参考`com.adrninistrator.mybatis_mysql_table_parser.dto.MyBatisMySqlInfo`类
+
+能够获取的信息如下：
+
+- mapper接口类名
+- MySQL的完整sql语句Map
+- MySQL的sql语句中的表信息Map
+- mapper对应的可能的数据库表名
+- Entity类名
+- Entity类字段名与对应的数据库表字段名Map
+- 数据库表字段名与对应的entity类字段名Map

@@ -47,7 +47,7 @@ public class Entry4GetMyBatisMySqlTableDetailInfo extends AbstractEntry {
             writer.write(fileHeader);
 
             // 处理目录
-            handleDirectory(dirPath);
+            Map<String, MyBatisMySqlInfo> myBatisSqlInfoMap = handleDirectory(dirPath);
 
             List<String> mapperClassNameList = new ArrayList<>(myBatisSqlInfoMap.keySet());
             Collections.sort(mapperClassNameList);
@@ -74,7 +74,7 @@ public class Entry4GetMyBatisMySqlTableDetailInfo extends AbstractEntry {
                 }
             }
         } catch (Exception e) {
-            logger.error("error ", e);
+            logger.error("解析sql语句出现异常 ", e);
         }
     }
 
