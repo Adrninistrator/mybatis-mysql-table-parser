@@ -1,8 +1,8 @@
-package com.adrninistrator.mybatis_mysql_table_parser.entry;
+package com.adrninistrator.mybatismysqltableparser.entry;
 
-import com.adrninistrator.mybatis_mysql_table_parser.common.MyBatisTableParserConstants;
-import com.adrninistrator.mybatis_mysql_table_parser.dto.MyBatisMySqlInfo;
-import com.adrninistrator.mybatis_mysql_table_parser.dto.MySqlTableInfo;
+import com.adrninistrator.mybatismysqltableparser.common.MyBatisTableParserConstants;
+import com.adrninistrator.mybatismysqltableparser.dto.MyBatisMySqlInfo;
+import com.adrninistrator.mybatismysqltableparser.dto.MySqlTableColumnInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,29 +49,29 @@ public class Entry4GetMyBatisMySqlTableName extends AbstractEntry {
 
             for (Map.Entry<String, MyBatisMySqlInfo> entry : myBatisSqlInfoMap.entrySet()) {
                 MyBatisMySqlInfo myBatisSqlInfo = entry.getValue();
-                Map<String, MySqlTableInfo> mySqlTableInfoMap = myBatisSqlInfo.getMySqlTableInfoMap();
-                for (Map.Entry<String, MySqlTableInfo> entry1 : mySqlTableInfoMap.entrySet()) {
-                    MySqlTableInfo mySqlTableInfo = entry1.getValue();
+                Map<String, MySqlTableColumnInfo> mySqlTableColumnInfoMap = myBatisSqlInfo.getMySqlTableColumnInfoMap();
+                for (Map.Entry<String, MySqlTableColumnInfo> entry1 : mySqlTableColumnInfoMap.entrySet()) {
+                    MySqlTableColumnInfo mySqlTableColumnInfo = entry1.getValue();
                     // 添加所有的表名列表
-                    allTableSet.addAll(mySqlTableInfo.getSelectTableList());
-                    allTableSet.addAll(mySqlTableInfo.getSelect4UpdateTableList());
-                    allTableSet.addAll(mySqlTableInfo.getInsertTableList());
-                    allTableSet.addAll(mySqlTableInfo.getInsertIgnoreTableList());
-                    allTableSet.addAll(mySqlTableInfo.getInsertOrUpdateTableList());
-                    allTableSet.addAll(mySqlTableInfo.getReplaceTableList());
-                    allTableSet.addAll(mySqlTableInfo.getUpdateTableList());
-                    allTableSet.addAll(mySqlTableInfo.getDeleteTableList());
-                    allTableSet.addAll(mySqlTableInfo.getAlterTableList());
-                    allTableSet.addAll(mySqlTableInfo.getTruncateTableList());
-                    allTableSet.addAll(mySqlTableInfo.getCreateTableList());
-                    allTableSet.addAll(mySqlTableInfo.getDropTableList());
+                    allTableSet.addAll(mySqlTableColumnInfo.getSelectTableList());
+                    allTableSet.addAll(mySqlTableColumnInfo.getSelect4UpdateTableList());
+                    allTableSet.addAll(mySqlTableColumnInfo.getInsertTableList());
+                    allTableSet.addAll(mySqlTableColumnInfo.getInsertIgnoreTableList());
+                    allTableSet.addAll(mySqlTableColumnInfo.getInsertOrUpdateTableList());
+                    allTableSet.addAll(mySqlTableColumnInfo.getReplaceTableList());
+                    allTableSet.addAll(mySqlTableColumnInfo.getUpdateTableList());
+                    allTableSet.addAll(mySqlTableColumnInfo.getDeleteTableList());
+                    allTableSet.addAll(mySqlTableColumnInfo.getAlterTableList());
+                    allTableSet.addAll(mySqlTableColumnInfo.getTruncateTableList());
+                    allTableSet.addAll(mySqlTableColumnInfo.getCreateTableList());
+                    allTableSet.addAll(mySqlTableColumnInfo.getDropTableList());
                 }
             }
 
             // 在文件中记录表名信息
             recordTableInfo(writer, allTableSet);
         } catch (Exception e) {
-            logger.error("解析sql语句出现异常 ", e);
+            logger.error("获取指定目录中MyBatis XML中涉及的全部MySQL表名出现异常 ", e);
         }
     }
 

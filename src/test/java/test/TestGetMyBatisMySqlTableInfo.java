@@ -1,6 +1,6 @@
 package test;
 
-import com.adrninistrator.mybatis_mysql_table_parser.entry.Entry4GetMyBatisMySqlTableInfo;
+import com.adrninistrator.mybatismysqltableparser.entry.Entry4GetMyBatisMySqlTableInfo;
 import org.junit.Test;
 
 /**
@@ -12,6 +12,6 @@ public class TestGetMyBatisMySqlTableInfo {
     @Test
     public void test() {
         Entry4GetMyBatisMySqlTableInfo entry4GetMyBatisMySqlAllTables = new Entry4GetMyBatisMySqlTableInfo();
-        entry4GetMyBatisMySqlAllTables.getTableInfo("D:/test/test_dir", "result_table_info.txt");
+        entry4GetMyBatisMySqlAllTables.getTableInfo("D:/test/test_dir", "result_table_info.md");
     }
 }

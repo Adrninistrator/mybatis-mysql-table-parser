@@ -4,7 +4,7 @@
 
 # 1. 说明
 
-当前项目用于解析MyBatis XML文件中sql语句使用的数据库表名，支持使用MySQL数据库（或兼容MySQL协议的数据库）的情况。
+当前项目用于解析MyBatis XML文件中sql语句使用的数据库表名，以及where和set子句中的字段名与对应的变量名，支持使用MySQL数据库（或兼容MySQL协议的数据库）的情况。
 
 支持获取的sql语句类型为常见的DML及DDL语句，如下所示：
 
@@ -30,7 +30,7 @@ drop table
 - Gradle
 
 ```
-testImplementation 'com.github.adrninistrator:mybatis-mysql-table-parser:0.0.6'
+testImplementation 'com.github.adrninistrator:mybatis-mysql-table-parser:0.0.7'
 ```
 
 - Maven
@@ -39,7 +39,7 @@ testImplementation 'com.github.adrninistrator:mybatis-mysql-table-parser:0.0.6'
 <dependency>
   <groupId>com.github.adrninistrator</groupId>
   <artifactId>mybatis-mysql-table-parser</artifactId>
-  <version>0.0.6</version>
+  <version>0.0.7</version>
 </dependency>
 ```
 
@@ -48,38 +48,86 @@ testImplementation 'com.github.adrninistrator:mybatis-mysql-table-parser:0.0.6'
 `由于Maven间接依赖的组件版本不会自动使用最大的版本号，因此可能需要在项目中手工指定mybatis-mysql-table-parser依赖组件的版本号，避免因为依赖组件版本不一致导致问题，可通过mybatis-mysql-table-parser的pom文件的dependencies元素查看依赖组件版本`
 
 ```
-https://repo1.maven.org/maven2/com/github/adrninistrator/mybatis-mysql-table-parser/0.0.6/mybatis-mysql-table-parser-0.0.6.pom
+https://repo1.maven.org/maven2/com/github/adrninistrator/mybatis-mysql-table-parser/0.0.7/mybatis-mysql-table-parser-0.0.7.pom
 ```
 
 # 3. 项目地址
 
 当前项目的代码地址为： [https://github.com/Adrninistrator/mybatis-mysql-table-parser](https://github.com/Adrninistrator/mybatis-mysql-table-parser) 。
 
-# 4. 将表名的详细信息写入文件
+# 4. 将表名与字段名的详细信息写入文件
 
-执行以下类的`getDetailInfo()`方法，可以获取指定目录中MyBatis XML中涉及的表名详细信息，并写入指定文件：
-
-```java
-com.adrninistrator.mybatis_mysql_table_parser.entry.Entry4GetMyBatisMySqlTableDetailInfo
-```
-
-可参考`TestEntry4GetMyBatisMySqlTableDetailInfo`类中的代码，如下所示：
+执行以下类的`getDetailInfo()`方法，可以获取指定目录中MyBatis XML中涉及的表名及字段名的详细信息，并写入指定的目录中：
 
 ```java
-Entry4GetMyBatisMySqlTableDetailInfo entry4GetMyBatisMySqlTableDetailInfo = new Entry4GetMyBatisMySqlTableDetailInfo();
-entry4GetMyBatisMySqlTableDetailInfo.getDetailInfo("D:/test/test_dir", "result_table_detail_info.txt");
+com.adrninistrator.mybatis_mysql_table_parser.entry.Entry4GetMyBatisMySqlTableColumnDetailInfo
 ```
 
-生成的文件内容使用"\t"分隔，内容分别为MyBatis Mapper类名、MyBatis Mapper方法名、sql语句类型、相关的数据库表名。
+可参考`TestGetMyBatisMySqlTableColumnDetailInfo`类中的代码，如下所示：
+
+```java
+Entry4GetMyBatisMySqlTableColumnDetailInfo entry4GetMyBatisMySqlTableDetailInfo = new Entry4GetMyBatisMySqlTableColumnDetailInfo();
+entry4GetMyBatisMySqlTableDetailInfo.getDetailInfo("D:/test/test_dir", ".");
+```
+
+## 4.1. result_table_info.md
+
+当前文件中保存的是sql语句中数据库表的详细信息，生成的文件内容使用"\t"分隔
 
 生成文件内容示例如下：
 
 ```
-# MyBatis-Mapper类名	MyBatis-Mapper方法名	sql语句类型	表名
-tester.sql.dao.TestUpdateLimit1Dao	delete	delete	test_update_limit1
-tester.sql.dao.TestUpdateLimit1Dao	insert	insert_into	test_update_limit1
-tester.sql.dao.TestUpdateLimit1Dao	select	select	test_update_limit1
-tester.sql.dao.TestUpdateLimit1Dao	update	update	test_update_limit1
+# MyBatis-Mapper类名	MyBatis-Mapper方法名	sql语句类型	数据库表名	XML文件路径
+tester.sql.dao.InnodbLocksDao	select	select	INNODB_LOCKS	src\main\resources\test\sql\InnodbLocksDaoMapper.xml
+tester.sql.dao.TestDao	insert	insert_into	test_balance	src\main\resources\test\sql\TestDaoMapper.xml
+tester.sql.dao.TestDao	insertIgnore	insert_ignore_into	test_balance	src\main\resources\test\sql\TestDaoMapper.xml
+tester.sql.dao.TestDao	insertLog	insert_into	test_balance_log	src\main\resources\test\sql\TestDaoMapper.xml
+tester.sql.dao.TestDao	select	select	test_balance	src\main\resources\test\sql\TestDaoMapper.xml
+tester.sql.dao.TestDao	selectList	select	test_balance	src\main\resources\test\sql\TestDaoMapper.xml
+```
+
+## result_select_column.md
+
+当前文件中保存的是sql语句的select的字段信息，生成的文件内容使用"\t"分隔
+
+生成文件内容示例如下：
+
+```
+# MyBatis-Mapper类名	MyBatis-Mapper方法名	数据库表名	数据库字段名	数据库字段别名	XML文件路径
+tester.sql.dao.TestDao	select	test_balance	balance		src\main\resources\test\sql\TestDaoMapper.xml
+tester.sql.dao.TestDao	select	test_balance	id		src\main\resources\test\sql\TestDaoMapper.xml
+tester.sql.dao.TestDao	selectList	test_balance	id		src\main\resources\test\sql\TestDaoMapper.xml
+tester.sql.dao.TestDao	selectMap	test_balance	balance		src\main\resources\test\sql\TestDaoMapper.xml
+tester.sql.dao.TestDao	selectMap	test_balance	id		src\main\resources\test\sql\TestDaoMapper.xml
+```
+
+## 4.2. result_where_column.md
+
+当前文件中保存的是sql语句的where子句中的字段信息，生成的文件内容使用"\t"分隔
+
+生成文件内容示例如下：
+
+```
+# MyBatis-Mapper类名	MyBatis-Mapper方法名	数据库表名	数据库字段名	数据库字段进行比较的方式	数据库字段用于比较的变量名	数据库字段用于比较的变量的使用方式	XML文件路径
+tester.sql.dao.TestDao	select	test_balance	id	=	id	#	src\main\resources\test\sql\TestDaoMapper.xml
+tester.sql.dao.TestDao	selectTrim	test_balance	id	>	id_min	#	src\main\resources\test\sql\TestDaoMapper.xml
+tester.sql.dao.TestDao	selectTrim	test_balance	id	<	id_max	#	src\main\resources\test\sql\TestDaoMapper.xml
+tester.sql.dao.TestDao	select_slave	test_balance	id	=	id	#	src\main\resources\test\sql\TestDaoMapper.xml
+tester.sql.dao.TestDao	update	test_balance	id	=	id	#	src\main\resources\test\sql\TestDaoMapper.xml
+```
+
+## 4.3. result_set_column.md
+
+当前文件中保存的是sql语句的update set子句中的字段信息，生成的文件内容使用"\t"分隔
+
+生成文件内容示例如下：
+
+```
+# MyBatis-Mapper类名	MyBatis-Mapper方法名	数据库表名	数据库字段名	数据库字段赋值的变量名	XML文件路径
+tester.sql.dao.TestSelectInsertMapper	updateByPrimaryKey	test_select_insert	create_time	createTime	src\main\resources\test\sql\TestSelectInsertDao.xml
+tester.sql.dao.TestSelectInsertMapper	updateByPrimaryKey	test_select_insert	seq	seq	src\main\resources\test\sql\TestSelectInsertDao.xml
+tester.sql.dao.TestSelectInsertMapper	updateByPrimaryKey	test_select_insert	status	status	src\main\resources\test\sql\TestSelectInsertDao.xml
+tester.sql.dao.TestSelectInsertMapper	updateByPrimaryKey	test_select_insert	update_time	updateTime	src\main\resources\test\sql\TestSelectInsertDao.xml
 ```
 
 # 5. 将表名及sql语句类型写入文件
@@ -94,10 +142,10 @@ com.adrninistrator.mybatis_mysql_table_parser.entry.Entry4GetMyBatisMySqlTableIn
 
 ```java
 Entry4GetMyBatisMySqlTableInfo entry4GetMyBatisMySqlAllTables = new Entry4GetMyBatisMySqlTableInfo();
-entry4GetMyBatisMySqlAllTables.getTableInfo("D:/test/test_dir", "result_table_info.txt");
+entry4GetMyBatisMySqlAllTables.getTableInfo("D:/test/test_dir", "result_table_info.md");
 ```
 
-生成的文件内容使用"\t"分隔，内容分别为sql语句类型、相关的数据库表名。
+生成的文件内容使用"\t"分隔，内容分别为：sql语句类型、相关的数据库表名。
 
 生成文件内容示例如下：
 
@@ -126,7 +174,7 @@ com.adrninistrator.mybatis_mysql_table_parser.entry.Entry4GetMyBatisMySqlTableNa
 
 ```java
 Entry4GetMyBatisMySqlTableName entry4GetMyBatisMySqlAllTableName = new Entry4GetMyBatisMySqlTableName();
-entry4GetMyBatisMySqlAllTableName.getTableName("D:/test/test_dir", "result_table_name.txt");
+entry4GetMyBatisMySqlAllTableName.getTableName("D:/test/test_dir", "result_table_name.md");
 ```
 
 生成的文件内容为相关的数据库表名。
@@ -146,7 +194,7 @@ test_table3
 以上的使用方式会将MyBatis XML文件中使用的数据库表名信息写入文件，假如需要在Java代码中获取以上解析结果，可以执行以下类：
 
 ```java
-com.adrninistrator.mybatis_mysql_table_parser.entry.Entry4GetMyBatisMySqlTableName
+com.adrninistrator.mybatis_mysql_table_parser.entry.Entry4ParseMyBatisMySqlTable
 ```
 
 `parseDirectory()`方法用于解析指定目录中所有MyBatis XML文件中涉及的表名，`parseFile()`方法用于解析指定MyBatis XML文件中涉及的表名。
@@ -155,8 +203,8 @@ com.adrninistrator.mybatis_mysql_table_parser.entry.Entry4GetMyBatisMySqlTableNa
 
 ```java
 Entry4ParseMyBatisMySqlTable entry4ParseMyBatisMySqlTable = new Entry4ParseMyBatisMySqlTable();
-Map<String, MyBatisSqlInfo> myBatisSqlInfoMap = entry4ParseMyBatisMySqlTable.parseDirectory("D:/test/test_dir");
-MyBatisSqlInfo myBatisSqlInfo = entry4ParseMyBatisMySqlTable.parseFile("D:/test/test_dir/test.xml");
+Map<String, MyBatisMySqlInfo> myBatisSqlInfoMap = entry4ParseMyBatisMySqlTable.parseDirectory("D:/test/test_dir");
+MyBatisMySqlInfo myBatisSqlInfo = entry4ParseMyBatisMySqlTable.parseFile("D:/test/test_dir/test.xml");
 ```
 
 ## 7.2. 结果说明
@@ -169,8 +217,8 @@ MyBatisSqlInfo myBatisSqlInfo = entry4ParseMyBatisMySqlTable.parseFile("D:/test/
 
 - mapper接口类名
 - MySQL的完整sql语句Map
-- MySQL的sql语句中的表信息Map
+- MySQL的sql语句中的表与字段信息Map
 - mapper对应的可能的数据库表名
 - Entity类名
-- Entity类字段名与对应的数据库表字段名Map
-- 数据库表字段名与对应的entity类字段名Map
+- Entity类字段名与对应的数据库字段名Map
+- 数据库字段名与对应的entity类字段名Map

@@ -1,6 +1,6 @@
-package com.adrninistrator.mybatis_mysql_table_parser.entry;
+package com.adrninistrator.mybatismysqltableparser.entry;
 
-import com.adrninistrator.mybatis_mysql_table_parser.dto.MyBatisMySqlInfo;
+import com.adrninistrator.mybatismysqltableparser.dto.MyBatisMySqlInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,33 +35,33 @@ public class Entry4ParseMyBatisMySqlTable extends AbstractEntry {
     /**
      * 解析文件中MyBatis XML中涉及的MySQL表名
      *
-     * @param filePath 需要解析的文件路径
+     * @param xmlFilePath 需要解析的XML文件路径
      * @return MyBatis的sql信息，说明见AbstractEntry类的myBatisSqlInfoMap字段
      */
-    public MyBatisMySqlInfo parseFile(String filePath) {
-        if (StringUtils.isBlank(filePath)) {
+    public MyBatisMySqlInfo parseFile(String xmlFilePath) {
+        if (StringUtils.isBlank(xmlFilePath)) {
             logger.error("传入参数不允许为空");
             return null;
         }
 
         // 处理xml文件
-        return handleXmlFile(filePath);
+        return handleXmlFile(xmlFilePath);
     }
 
     /**
      * 解析文件中MyBatis XML中涉及的MySQL表名
      *
      * @param inputStream 需要解析的文件内容对应的InputStream，流使用完毕后需要调用方关闭
-     * @param filePath    需要解析的文件路径，仅用于打印日志
+     * @param xmlFilePath 需要解析的XML文件路径
      * @return MyBatis的sql信息，说明见AbstractEntry类的myBatisSqlInfoMap字段
      */
-    public MyBatisMySqlInfo parseFile(InputStream inputStream, String filePath) {
-        if (StringUtils.isBlank(filePath)) {
+    public MyBatisMySqlInfo parseFile(InputStream inputStream, String xmlFilePath) {
+        if (StringUtils.isBlank(xmlFilePath)) {
             logger.error("传入参数不允许为空");
             return null;
         }
 
         // 处理xml文件
-        return handleXmlFile(inputStream, filePath);
+        return handleXmlFile(inputStream, xmlFilePath);
     }
 }

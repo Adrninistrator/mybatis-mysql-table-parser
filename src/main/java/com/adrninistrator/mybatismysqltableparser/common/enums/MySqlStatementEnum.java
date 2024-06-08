@@ -1,4 +1,4 @@
-package com.adrninistrator.mybatis_mysql_table_parser.common.enums;
+package com.adrninistrator.mybatismysqltableparser.common.enums;
 
 /**
  * @author adrninistrator
@@ -19,6 +19,7 @@ public enum MySqlStatementEnum {
     DSSE_TRUNCATE("truncate_table", "truncate", false, false),
     DSSE_CREATE("create_table", "create", false, false),
     DSSE_DROP("drop_table", "drop", false, false),
+    DSSE_OPTIMIZE("optimize_table", "optimize", false, false),
     DSSE_ILLEGAL("-", "-", false, false);
 
     // 语句类型

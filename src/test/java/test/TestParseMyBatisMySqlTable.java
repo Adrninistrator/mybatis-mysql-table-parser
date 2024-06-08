@@ -1,7 +1,7 @@
 package test;
 
-import com.adrninistrator.mybatis_mysql_table_parser.dto.MyBatisMySqlInfo;
-import com.adrninistrator.mybatis_mysql_table_parser.entry.Entry4ParseMyBatisMySqlTable;
+import com.adrninistrator.mybatismysqltableparser.dto.MyBatisMySqlInfo;
+import com.adrninistrator.mybatismysqltableparser.entry.Entry4ParseMyBatisMySqlTable;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

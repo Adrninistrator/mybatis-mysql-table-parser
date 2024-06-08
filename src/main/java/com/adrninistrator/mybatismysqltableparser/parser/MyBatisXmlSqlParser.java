@@ -1,9 +1,12 @@
-package com.adrninistrator.mybatis_mysql_table_parser.parser;
+package com.adrninistrator.mybatismysqltableparser.parser;
 
-import com.adrninistrator.mybatis_mysql_table_parser.dto.MyBatisMySqlInfo;
-import com.adrninistrator.mybatis_mysql_table_parser.token_handler.EmptyTokenHandler;
-import com.adrninistrator.mybatis_mysql_table_parser.token_handler.QuestionMarkTokenHandler;
-import com.adrninistrator.mybatis_mysql_table_parser.xml.NoOpEntityResolver;
+import com.adrninistrator.mybatismysqltableparser.common.MyBatisTableParserConstants;
+import com.adrninistrator.mybatismysqltableparser.dto.MyBatisMySqlInfo;
+import com.adrninistrator.mybatismysqltableparser.dto.MyBatisXmlElement4Statement;
+import com.adrninistrator.mybatismysqltableparser.tokenhandler.DollarParameterTokenHandler;
+import com.adrninistrator.mybatismysqltableparser.tokenhandler.EmptyTokenHandler;
+import com.adrninistrator.mybatismysqltableparser.tokenhandler.HashtagParameterTokenHandler;
+import com.adrninistrator.mybatismysqltableparser.xml.NoOpEntityResolver;
 import copy.org.apache.ibatis.parsing.GenericTokenParser;
 import org.apache.commons.lang3.StringUtils;
 import org.jdom2.Comment;
@@ -90,10 +93,10 @@ public class MyBatisXmlSqlParser {
         // 不读取DTD
         saxBuilder.setEntityResolver(new NoOpEntityResolver());
 
-        // 将#{}替换为?
-        hashtagValueParser = new GenericTokenParser("#{", "}", QuestionMarkTokenHandler.getInstance());
-        // 将${}替换为?
-        dollarValueParser = new GenericTokenParser("${", "}", QuestionMarkTokenHandler.getInstance());
+        // 处理#{}形式的参数
+        hashtagValueParser = new GenericTokenParser("#{", "}", HashtagParameterTokenHandler.getInstance());
+        // 处理${}形式的参数
+        dollarValueParser = new GenericTokenParser("${", "}", DollarParameterTokenHandler.getInstance());
         // 将sql语句中的多行注释替换掉
         commentMultiLineParser = new GenericTokenParser("/*", "*/", EmptyTokenHandler.getInstance());
         // 将sql语句中的单行注释替换掉，以/r结束
@@ -106,28 +109,28 @@ public class MyBatisXmlSqlParser {
      * 解析MyBatis的XML文件中的sql语句
      *
      * @param inputStream
-     * @param filePath
+     * @param xmlFilePath
      * @return
      * @throws IOException
      * @throws JDOMException
      */
-    public MyBatisMySqlInfo parseMybatisXmlSql(InputStream inputStream, String filePath) throws IOException, JDOMException {
+    public MyBatisMySqlInfo parseMybatisXmlSql(InputStream inputStream, String xmlFilePath) throws IOException, JDOMException {
         Document document = saxBuilder.build(inputStream);
 
         Element root = document.getRootElement();
         if (!"mapper".equals(root.getName())) {
-            logger.info("跳过非Mybatis XML 1: {}", filePath);
+            logger.info("跳过非Mybatis XML 1: {}", xmlFilePath);
             return null;
         }
 
         String namespace = root.getAttributeValue("namespace");
         if (StringUtils.isBlank(namespace)) {
-            logger.info("跳过非Mybatis XML 2: {}", filePath);
+            logger.info("跳过非Mybatis XML 2: {}", xmlFilePath);
             return null;
         }
 
         // 以上用于跳过非Mybatis mapper的XML文件
-        logger.info("开始处理Mybatis XML: {}", filePath);
+        logger.info("开始处理Mybatis XML: {}", xmlFilePath);
 
         Map<String, String> sqlElementMap = new HashMap<>();
 
@@ -135,7 +138,7 @@ public class MyBatisXmlSqlParser {
         preHandleMybatisXml(root, sqlElementMap);
 
         // 获取MyBatis XML文件中的sql语句
-        return handleMybatisXml(root, namespace, sqlElementMap);
+        return handleMybatisXml(xmlFilePath, root, namespace, sqlElementMap);
     }
 
     // 对MyBatis XML文件进行预处理
@@ -159,17 +162,18 @@ public class MyBatisXmlSqlParser {
                 }
                 sqlElementMap.put(id, fullSqlList.get(0));
             } catch (Exception e) {
-                logger.error("解析sql语句出现异常 ", e);
+                logger.error("预处理MyBatis XML文件出现异常 ", e);
             }
         }
     }
 
     // 获取MyBatis XML文件中的sql语句
-    private MyBatisMySqlInfo handleMybatisXml(Element root, String namespace, Map<String, String> sqlElementMap) {
-        Map<String, List<String>> sqlMap = new HashMap<>();
+    private MyBatisMySqlInfo handleMybatisXml(String xmlFilePath, Element root, String namespace, Map<String, String> sqlElementMap) {
+        Map<String, MyBatisXmlElement4Statement> statementMap = new HashMap<>();
         MyBatisMySqlInfo myBatisSqlInfo = new MyBatisMySqlInfo();
+        myBatisSqlInfo.setXmlFilePath(xmlFilePath);
         myBatisSqlInfo.setMapperInterfaceName(namespace);
-        myBatisSqlInfo.setFullSqlMap(sqlMap);
+        myBatisSqlInfo.setStatementMap(statementMap);
 
         boolean resultMapHandled = false;
         for (Element element : root.getChildren()) {
@@ -178,7 +182,8 @@ public class MyBatisXmlSqlParser {
                 // 处理resultMap元素，不判断resultMap元素的id，因为存在id非BaseResultMap的情况
                 handleResultMapElement(myBatisSqlInfo, element);
                 resultMapHandled = true;
-            } else if (StringUtils.equalsAny(elementName, "select", "insert", "update", "delete")) {
+            } else if (StringUtils.equalsAny(elementName, MyBatisTableParserConstants.XML_ELEMENT_NAME_SELECT, MyBatisTableParserConstants.XML_ELEMENT_NAME_INSERT,
+                    MyBatisTableParserConstants.XML_ELEMENT_NAME_UPDATE, MyBatisTableParserConstants.XML_ELEMENT_NAME_DELETE)) {
                 try {
                     // 处理sql语句
                     String sqlId = element.getAttributeValue("id");
@@ -197,9 +202,11 @@ public class MyBatisXmlSqlParser {
 
                     // 将sql片段列表拼接为多条完整sql语句
                     List<String> fullSqlList = appendSqlFragment(sqlFragmentList, false);
-                    sqlMap.put(sqlId, fullSqlList);
+
+                    MyBatisXmlElement4Statement statement = new MyBatisXmlElement4Statement(elementName, fullSqlList);
+                    statementMap.put(sqlId, statement);
                 } catch (Exception e) {
-                    logger.error("解析sql语句出现异常 ", e);
+                    logger.error("获取MyBatis XML文件中的sql语句出现异常 ", e);
                 }
             }
         }
@@ -211,9 +218,9 @@ public class MyBatisXmlSqlParser {
         // 记录对应的Entity类名
         myBatisSqlInfo.setEntityClassName(element.getAttributeValue("type"));
 
-        Map<String, String> entityAndTableColumnNameMap = new HashMap<>();
+        Map<String, String> entityAndColumnNameMap = new HashMap<>();
         Map<String, String> tableAndEntityColumnNameMap = new HashMap<>();
-        myBatisSqlInfo.setEntityAndTableColumnNameMap(entityAndTableColumnNameMap);
+        myBatisSqlInfo.setEntityAndColumnNameMap(entityAndColumnNameMap);
         myBatisSqlInfo.setTableAndEntityColumnNameMap(tableAndEntityColumnNameMap);
         for (Element childElement : element.getChildren()) {
             if (!StringUtils.equalsAny(childElement.getName(), "id", "result")) {
@@ -223,10 +230,10 @@ public class MyBatisXmlSqlParser {
             String column = childElement.getAttributeValue("column");
             String property = childElement.getAttributeValue("property");
             if (StringUtils.isNoneBlank(column, property)) {
-                // 记录Entity类字段名与对应的数据库表字段名
-                entityAndTableColumnNameMap.put(property, column);
+                // 记录Entity类字段名与对应的数据库字段名
+                entityAndColumnNameMap.put(property, column);
 
-                // 记录数据库表字段名与对应的entity类字段名
+                // 记录数据库字段名与对应的entity类字段名
                 tableAndEntityColumnNameMap.put(column, property);
             }
         }
@@ -290,7 +297,7 @@ public class MyBatisXmlSqlParser {
 
                 if (!StringUtils.equalsAny(elementName, "selectKey", "bind")) {
                     // 在这里不处理selectKey、bind
-                    logger.error("暂未处理的MyBatis类型 {}", elementName);
+                    logger.error("暂未处理的MyBatis XML元素类型 {}", elementName);
                     continue;
                 }
                 continue;

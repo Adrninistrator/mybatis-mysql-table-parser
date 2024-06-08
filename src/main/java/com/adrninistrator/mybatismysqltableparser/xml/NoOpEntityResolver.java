@@ -1,4 +1,4 @@
-package com.adrninistrator.mybatis_mysql_table_parser.xml;
+package com.adrninistrator.mybatismysqltableparser.xml;
 
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;

@@ -8,5 +8,5 @@ out/
 .gradle/
 *.iml
 .classpath
-src/test/java/test_local/
-result_table_*.txt
+result_*.md
+testlocal/
