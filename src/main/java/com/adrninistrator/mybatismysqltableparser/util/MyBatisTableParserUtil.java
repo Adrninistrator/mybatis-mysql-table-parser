@@ -154,7 +154,7 @@ public class MyBatisTableParserUtil {
      */
     public static String getTableNameFromTableSource(SQLTableSource sqlTableSource, String tableAlias) {
         if (sqlTableSource == null) {
-            logger.error("传入的SQLTableSource为空 [{}] [{}] [{}] [{}]", tableAlias, getCurrentXmlFileName(), getCurrentSqlID(), getCurrentSql());
+            logger.warn("传入的SQLTableSource为空 [{}] [{}] [{}] [{}]", tableAlias, getCurrentXmlFileName(), getCurrentSqlID(), getCurrentSql());
             return "";
         }
         if (StringUtils.isBlank(tableAlias)) {
@@ -164,7 +164,7 @@ public class MyBatisTableParserUtil {
         // 使用表别名
         SQLTableSource sqlTableSourceUseAlias = sqlTableSource.findTableSource(tableAlias);
         if (sqlTableSourceUseAlias == null) {
-            logger.error("从SQLTableSource中根据表别名未获取到对应的表 [{}] [{}] [{}] [{}] [{}]", sqlTableSource, tableAlias, getCurrentXmlFileName(), getCurrentSqlID(), getCurrentSql());
+            logger.warn("从SQLTableSource中根据表别名未获取到对应的表 [{}] [{}] [{}] [{}] [{}]", sqlTableSource, tableAlias, getCurrentXmlFileName(), getCurrentSqlID(), getCurrentSql());
             return "";
         }
         return getTableNameFromTableSource(sqlTableSourceUseAlias);
@@ -235,7 +235,7 @@ public class MyBatisTableParserUtil {
                 !(columnExpr instanceof SQLBinaryOpExpr) &&
                 !(columnExpr instanceof SQLMethodInvokeExpr) &&
                 !(columnExpr instanceof SQLCurrentTimeExpr)) {
-            logger.error("暂未处理的字段类型 {} [{}] [{}] [{}] [{}]", columnExpr.getClass().getName(), columnExpr, getCurrentXmlFileName(), getCurrentSqlID(), getCurrentSql());
+            logger.warn("暂未处理的字段类型 {} [{}] [{}] [{}] [{}]", columnExpr.getClass().getName(), columnExpr, getCurrentXmlFileName(), getCurrentSqlID(), getCurrentSql());
         }
         return Collections.emptyList();
     }
@@ -260,7 +260,7 @@ public class MyBatisTableParserUtil {
             parameterName = rightName;
             parameterType = MyBatisTableParserConstants.FLAG_AT;
         } else {
-            logger.error("暂未处理的变量形式 {} [{}] [{}] [{}]", rightName, getCurrentXmlFileName(), getCurrentSqlID(), getCurrentSql());
+            logger.warn("暂未处理的变量形式 {} [{}] [{}] [{}]", rightName, getCurrentXmlFileName(), getCurrentSqlID(), getCurrentSql());
             parameterName = "";
             parameterType = "";
         }

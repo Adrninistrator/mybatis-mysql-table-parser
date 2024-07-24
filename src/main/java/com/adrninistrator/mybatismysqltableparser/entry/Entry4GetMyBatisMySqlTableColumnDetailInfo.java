@@ -46,13 +46,13 @@ public class Entry4GetMyBatisMySqlTableColumnDetailInfo extends AbstractEntry {
      */
     public void getDetailInfo(String dirPath, String outputDirPath) {
         if (StringUtils.isBlank(dirPath) || StringUtils.isBlank(outputDirPath)) {
-            logger.error("传入参数不允许为空");
+            logger.warn("传入参数不允许为空");
             return;
         }
 
         File dir = new File(outputDirPath);
         if (!dir.exists() || !dir.isDirectory()) {
-            logger.error("指定的目录不存在，需要先创建 {}", outputDirPath);
+            logger.warn("指定的目录不存在，需要先创建 {}", outputDirPath);
             return;
         }
 
@@ -121,7 +121,7 @@ public class Entry4GetMyBatisMySqlTableColumnDetailInfo extends AbstractEntry {
                 }
             }
         } catch (Exception e) {
-            logger.error("获取指定目录中MyBatis XML中涉及的表名详细信息出现异常 ", e);
+            logger.warn("获取指定目录中MyBatis XML中涉及的表名详细信息出现异常 ", e);
         }
     }
 

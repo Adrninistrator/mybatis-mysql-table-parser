@@ -157,12 +157,12 @@ public class MyBatisXmlSqlParser {
                 // 将sql片段列表拼接为一条完整sql语句
                 List<String> fullSqlList = appendSqlFragment(sqlFragmentList, true);
                 if (fullSqlList.isEmpty()) {
-                    logger.error("未获取sql元素的sql语句 {}", id);
+                    logger.warn("未获取sql元素的sql语句 {}", id);
                     continue;
                 }
                 sqlElementMap.put(id, fullSqlList.get(0));
             } catch (Exception e) {
-                logger.error("预处理MyBatis XML文件出现异常 ", e);
+                logger.warn("预处理MyBatis XML文件出现异常 ", e);
             }
         }
     }
@@ -206,7 +206,7 @@ public class MyBatisXmlSqlParser {
                     MyBatisXmlElement4Statement statement = new MyBatisXmlElement4Statement(elementName, fullSqlList);
                     statementMap.put(sqlId, statement);
                 } catch (Exception e) {
-                    logger.error("获取MyBatis XML文件中的sql语句出现异常 ", e);
+                    logger.warn("获取MyBatis XML文件中的sql语句出现异常 ", e);
                 }
             }
         }
@@ -261,7 +261,8 @@ public class MyBatisXmlSqlParser {
                     continue;
                 }
 
-                if (StringUtils.equalsAny(elementName, "if", "choose", "when", "otherwise")) {
+                // 不处理otherwise，否则拼接多个不同条件的结果后内容会有问题
+                if (StringUtils.equalsAny(elementName, "if", "choose", "when")) {
                     // 获取sql元素的content中的sql语句
                     getSqlFromElementContent(element, sqlFragmentList, sqlElementMap);
                     continue;
@@ -295,9 +296,9 @@ public class MyBatisXmlSqlParser {
                     continue;
                 }
 
-                if (!StringUtils.equalsAny(elementName, "selectKey", "bind")) {
+                if (!StringUtils.equalsAny(elementName, "selectKey", "bind", "otherwise")) {
                     // 在这里不处理selectKey、bind
-                    logger.error("暂未处理的MyBatis XML元素类型 {}", elementName);
+                    logger.warn("暂未处理的MyBatis XML元素类型 {}", elementName);
                     continue;
                 }
                 continue;
@@ -305,7 +306,7 @@ public class MyBatisXmlSqlParser {
 
             if (!(content instanceof Comment)) {
                 // 不处理注释
-                logger.error("暂未处理的XML类型 {}", content.getClass().getName());
+                logger.warn("暂未处理的XML类型 {}", content.getClass().getName());
             }
         }
     }

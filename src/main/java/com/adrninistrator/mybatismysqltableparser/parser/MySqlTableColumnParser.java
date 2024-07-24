@@ -165,14 +165,14 @@ public class MySqlTableColumnParser {
                     SQLShowTablesStatement                  SHOW TABLES LIKE语句
                     MySqlShowProfilesStatement              SHOW PROFILES语句
                  */
-                logger.error("暂未处理的SQLStatement类型 {}  [{}] [{}] [{}] [{}]", sqlStatement.getClass().getName(), sqlStatement, MyBatisTableParserUtil.getCurrentXmlFileName(),
+                logger.warn("暂未处理的SQLStatement类型 {}  [{}] [{}] [{}] [{}]", sqlStatement.getClass().getName(), sqlStatement, MyBatisTableParserUtil.getCurrentXmlFileName(),
                         MyBatisTableParserUtil.getCurrentSqlID(), MyBatisTableParserUtil.getCurrentSql());
             }
         } catch (ParserException e) {
-            logger.error("解析sql语句出现异常 [{}] [{}] [{}] {}", xmlFilePath, sqlId, fullSql, e.getMessage());
+            logger.warn("解析sql语句出现异常 [{}] [{}] [{}] {}", xmlFilePath, sqlId, fullSql, e.getMessage());
             mySqlTableColumnInfo.setParseFail(true);
         } catch (Exception e) {
-            logger.error("解析sql语句出现异常2 [{}] [{}] [{}] ", xmlFilePath, sqlId, fullSql, e);
+            logger.warn("解析sql语句出现异常2 [{}] [{}] [{}] ", xmlFilePath, sqlId, fullSql, e);
             mySqlTableColumnInfo.setParseFail(true);
         } finally {
             MyBatisTableParserUtil.clearThreadLocal();
@@ -235,7 +235,7 @@ public class MySqlTableColumnParser {
             /*
                 SQLValuesTableSource    values next value for xxx
              */
-            logger.error("暂未处理的SQLSelectQuery类型 {} [{}] [{}] [{}] [{}]", sqlSelectQuery.getClass().getName(), sqlSelectQuery, MyBatisTableParserUtil.getCurrentXmlFileName(),
+            logger.warn("暂未处理的SQLSelectQuery类型 {} [{}] [{}] [{}] [{}]", sqlSelectQuery.getClass().getName(), sqlSelectQuery, MyBatisTableParserUtil.getCurrentXmlFileName(),
                     MyBatisTableParserUtil.getCurrentSqlID(), MyBatisTableParserUtil.getCurrentSql());
         }
     }
@@ -308,7 +308,7 @@ public class MySqlTableColumnParser {
             }
 
             if (!MyBatisTableParserUtil.checkIgnoreSelectColumnExprType(sqlExpr)) {
-                logger.error("暂未处理的SQLExpr类型 {} [{}] [{}] [{}] [{}]", sqlExpr.getClass().getName(), sqlExpr, MyBatisTableParserUtil.getCurrentXmlFileName(),
+                logger.warn("暂未处理的SQLExpr类型 {} [{}] [{}] [{}] [{}]", sqlExpr.getClass().getName(), sqlExpr, MyBatisTableParserUtil.getCurrentXmlFileName(),
                         MyBatisTableParserUtil.getCurrentSqlID(), MyBatisTableParserUtil.getCurrentSql());
             }
         }
@@ -372,7 +372,7 @@ public class MySqlTableColumnParser {
         }
 
         if (!MyBatisTableParserUtil.checkIgnoreSelectColumnExprType(sqlExpr)) {
-            logger.error("暂未处理的SQLExpr类型 {} [{}] [{}] [{}] [{}]", sqlExpr.getClass().getName(), sqlExpr, MyBatisTableParserUtil.getCurrentXmlFileName(),
+            logger.warn("暂未处理的SQLExpr类型 {} [{}] [{}] [{}] [{}]", sqlExpr.getClass().getName(), sqlExpr, MyBatisTableParserUtil.getCurrentXmlFileName(),
                     MyBatisTableParserUtil.getCurrentSqlID(), MyBatisTableParserUtil.getCurrentSql());
         }
     }
@@ -445,7 +445,7 @@ public class MySqlTableColumnParser {
                         MyBatisTableParserUtil.getCurrentXmlFileName(), MyBatisTableParserUtil.getCurrentSqlID(), MyBatisTableParserUtil.getCurrentSql());
             }
         } else {
-            logger.error("暂未处理的SQLTableSource类型 {} [{}] [{}] [{}] [{}]", fromAllTableSource.getClass().getName(), fromAllTableSource,
+            logger.warn("暂未处理的SQLTableSource类型 {} [{}] [{}] [{}] [{}]", fromAllTableSource.getClass().getName(), fromAllTableSource,
                     MyBatisTableParserUtil.getCurrentXmlFileName(), MyBatisTableParserUtil.getCurrentSqlID(), MyBatisTableParserUtil.getCurrentSql());
         }
     }
@@ -522,7 +522,7 @@ public class MySqlTableColumnParser {
                 SQLMethodInvokeExpr     方法调用
                 SQLVariantRefExpr       ?
              */
-            logger.error("暂未处理的SQLExpr类型 {} [{}] [{}] [{}] [{}]", whereSqlExpr.getClass().getName(), whereSqlExpr, MyBatisTableParserUtil.getCurrentXmlFileName(),
+            logger.warn("暂未处理的SQLExpr类型 {} [{}] [{}] [{}] [{}]", whereSqlExpr.getClass().getName(), whereSqlExpr, MyBatisTableParserUtil.getCurrentXmlFileName(),
                     MyBatisTableParserUtil.getCurrentSqlID(), MyBatisTableParserUtil.getCurrentSql());
         }
     }
@@ -595,7 +595,7 @@ public class MySqlTableColumnParser {
                     SQLIdentifierExpr   update的set字段未使用别名的情况
                     SQLListExpr         (col1, col2, col3) = (?, ?, ?)
                  */
-                logger.error("暂未处理的SQLExpr类型 {} [{}] [{}] [{}] [{}]", updateSetColumnExpr.getClass().getName(), updateSetColumnExpr, MyBatisTableParserUtil.getCurrentXmlFileName(),
+                logger.warn("暂未处理的SQLExpr类型 {} [{}] [{}] [{}] [{}]", updateSetColumnExpr.getClass().getName(), updateSetColumnExpr, MyBatisTableParserUtil.getCurrentXmlFileName(),
                         MyBatisTableParserUtil.getCurrentSqlID(), MyBatisTableParserUtil.getCurrentSql());
             }
         }
@@ -663,7 +663,7 @@ public class MySqlTableColumnParser {
                 SQLVariantRefExpr sqlVariantRefExpr = (SQLVariantRefExpr) tableSourceExpr;
                 recordTableName(sqlVariantRefExpr.getName(), mySqlTableColumnInfo, MySqlStatementEnum.DSSE_DELETE);
             } else {
-                logger.error("暂未处理的SQLExpr类型 {} [{}] [{}] [{}] [{}]", tableSourceExpr.getClass().getName(), tableSourceExpr, MyBatisTableParserUtil.getCurrentXmlFileName(),
+                logger.warn("暂未处理的SQLExpr类型 {} [{}] [{}] [{}] [{}]", tableSourceExpr.getClass().getName(), tableSourceExpr, MyBatisTableParserUtil.getCurrentXmlFileName(),
                         MyBatisTableParserUtil.getCurrentSqlID(), MyBatisTableParserUtil.getCurrentSql());
             }
             return;
@@ -673,7 +673,7 @@ public class MySqlTableColumnParser {
                 SQLTableSource sqlTableSource可能为SQLJoinTableSource类型，但MySQL不支持这种写法
                     delete from test_balance_log l join test_balance b on l.id=b.id where b.balance = '1.23'
              */
-            logger.error("暂未处理的SQLTableSource类型 {} [{}] [{}] [{}] [{}]", sqlTableSource.getClass().getName(), sqlTableSource, MyBatisTableParserUtil.getCurrentXmlFileName(),
+            logger.warn("暂未处理的SQLTableSource类型 {} [{}] [{}] [{}] [{}]", sqlTableSource.getClass().getName(), sqlTableSource, MyBatisTableParserUtil.getCurrentXmlFileName(),
                     MyBatisTableParserUtil.getCurrentSqlID(), MyBatisTableParserUtil.getCurrentSql());
         }
     }
@@ -782,7 +782,7 @@ public class MySqlTableColumnParser {
             return;
         }
 
-        logger.error("暂未处理的SQLTableSource类型 {} [{}] [{}] [{}] [{}]", sqlTableSource.getClass().getName(), sqlTableSource, MyBatisTableParserUtil.getCurrentXmlFileName(),
+        logger.warn("暂未处理的SQLTableSource类型 {} [{}] [{}] [{}] [{}]", sqlTableSource.getClass().getName(), sqlTableSource, MyBatisTableParserUtil.getCurrentXmlFileName(),
                 MyBatisTableParserUtil.getCurrentSqlID(), MyBatisTableParserUtil.getCurrentSql());
     }
 
@@ -852,7 +852,7 @@ public class MySqlTableColumnParser {
                 mySqlTableColumnInfo.addDropTable(tableName);
                 break;
             default:
-                logger.error("非法的语句 {}", mySqlStatementEnum);
+                logger.warn("非法的语句 {}", mySqlStatementEnum);
                 break;
         }
     }

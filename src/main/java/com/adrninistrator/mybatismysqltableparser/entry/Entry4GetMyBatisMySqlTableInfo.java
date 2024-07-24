@@ -34,7 +34,7 @@ public class Entry4GetMyBatisMySqlTableInfo extends AbstractEntry {
      */
     public void getTableInfo(String dirPath, String outputFilePath) {
         if (StringUtils.isBlank(dirPath) || StringUtils.isBlank(outputFilePath)) {
-            logger.error("传入参数不允许为空");
+            logger.warn("传入参数不允许为空");
             return;
         }
 
@@ -71,7 +71,7 @@ public class Entry4GetMyBatisMySqlTableInfo extends AbstractEntry {
             recordTableInfo(writer, MySqlStatementEnum.DSSE_CREATE, allMySqlTableColumnInfo.getCreateTableList());
             recordTableInfo(writer, MySqlStatementEnum.DSSE_DROP, allMySqlTableColumnInfo.getDropTableList());
         } catch (Exception e) {
-            logger.error("获取指定目录中MyBatis XML中涉及的全部MySQL表名及对应的sql语句出现异常 ", e);
+            logger.warn("获取指定目录中MyBatis XML中涉及的全部MySQL表名及对应的sql语句出现异常 ", e);
         }
     }
 

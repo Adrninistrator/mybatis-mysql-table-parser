@@ -24,7 +24,7 @@ public class Entry4ParseMyBatisMySqlTable extends AbstractEntry {
      */
     public Map<String, MyBatisMySqlInfo> parseDirectory(String dirPath) {
         if (StringUtils.isBlank(dirPath)) {
-            logger.error("传入参数不允许为空");
+            logger.warn("传入参数不允许为空");
             return null;
         }
 
@@ -40,7 +40,7 @@ public class Entry4ParseMyBatisMySqlTable extends AbstractEntry {
      */
     public MyBatisMySqlInfo parseFile(String xmlFilePath) {
         if (StringUtils.isBlank(xmlFilePath)) {
-            logger.error("传入参数不允许为空");
+            logger.warn("传入参数不允许为空");
             return null;
         }
 
@@ -57,7 +57,7 @@ public class Entry4ParseMyBatisMySqlTable extends AbstractEntry {
      */
     public MyBatisMySqlInfo parseFile(InputStream inputStream, String xmlFilePath) {
         if (StringUtils.isBlank(xmlFilePath)) {
-            logger.error("传入参数不允许为空");
+            logger.warn("传入参数不允许为空");
             return null;
         }
 

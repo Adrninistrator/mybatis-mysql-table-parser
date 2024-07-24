@@ -92,7 +92,7 @@ public abstract class AbstractEntry {
         try (InputStream inputStream = new FileInputStream(xmlFilePath)) {
             return handleXmlFile(inputStream, xmlFilePath, myBatisSqlInfoMap);
         } catch (Exception e) {
-            logger.error("处理xml文件出现异常 {} ", xmlFilePath, e);
+            logger.warn("处理xml文件出现异常 {} ", xmlFilePath, e);
             return null;
         }
     }
@@ -125,7 +125,7 @@ public abstract class AbstractEntry {
                     MySqlTableColumnInfo mySqlTableColumnInfo = mySqlTableColumnParser.parseTablesInSql(xmlFilePath, statement.getXmlElementName(), sqlId, fullSql);
                     mySqlTableColumnInfoMap.put(sqlId, mySqlTableColumnInfo);
                     if (mySqlTableColumnInfo.isParseFail()) {
-                        logger.error("解析失败 {} {} [{}]", xmlFilePath, sqlId, fullSql);
+                        logger.warn("解析失败 {} {} [{}]", xmlFilePath, sqlId, fullSql);
                     }
                 }
             }
@@ -144,7 +144,7 @@ public abstract class AbstractEntry {
             return myBatisSqlInfo;
         } catch (Exception e) {
             String flag = e.getClass().getName().startsWith("org.jdom2.") ? "" : "预期外的异常";
-            logger.error("处理xml文件出现异常2 {} {} ", flag, xmlFilePath, e);
+            logger.warn("处理xml文件出现异常2 {} {} ", flag, xmlFilePath, e);
             return null;
         }
     }
@@ -225,7 +225,7 @@ public abstract class AbstractEntry {
             return tableList.get(0);
         }
         if (tableList.size() > 1) {
-            logger.error("修改操作语句中修改了多个数据库表 {} {}", xmlFilePath, StringUtils.join(tableList, " "));
+            logger.warn("修改操作语句中修改了多个数据库表 {} {}", xmlFilePath, StringUtils.join(tableList, " "));
         }
         return null;
     }

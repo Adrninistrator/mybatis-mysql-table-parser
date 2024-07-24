@@ -47,7 +47,7 @@ public class SQLBinaryOpExprVisitor implements MySqlASTVisitor {
         // 查找当前对象的父节点中的SQLTableSource
         SQLTableSource sqlTableSource = MyBatisTableParserUtil.findSQLTableSourceInSuper(x);
         if (sqlTableSource == null) {
-            logger.error("未获取到表来源 {}", x);
+            logger.warn("未获取到表来源 {}", x);
             return true;
         }
 
