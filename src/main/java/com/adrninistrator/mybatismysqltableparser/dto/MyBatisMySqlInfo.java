@@ -35,18 +35,11 @@ public class MyBatisMySqlInfo {
     private String entityClassName;
 
     /*
-        Entity类字段名与对应的数据库字段名Map
-        key     entity类字段名
-        value   数据库字段名
+        resultMap对应的Map
+        key     resultMap的id
+        value   resultMap
      */
-    private Map<String, String> entityAndColumnNameMap;
-
-    /*
-        数据库字段名与对应的entity类字段名Map
-        key     entity类字段名
-        value   数据库字段名
-     */
-    private Map<String, String> tableAndEntityColumnNameMap;
+    private Map<String, MyBatisResultMap> resultMapMap;
 
     public String getXmlFilePath() {
         return xmlFilePath;
@@ -96,19 +89,11 @@ public class MyBatisMySqlInfo {
         this.entityClassName = entityClassName;
     }
 
-    public Map<String, String> getEntityAndColumnNameMap() {
-        return entityAndColumnNameMap;
+    public Map<String, MyBatisResultMap> getResultMapMap() {
+        return resultMapMap;
     }
 
-    public void setEntityAndColumnNameMap(Map<String, String> entityAndColumnNameMap) {
-        this.entityAndColumnNameMap = entityAndColumnNameMap;
-    }
-
-    public Map<String, String> getTableAndEntityColumnNameMap() {
-        return tableAndEntityColumnNameMap;
-    }
-
-    public void setTableAndEntityColumnNameMap(Map<String, String> tableAndEntityColumnNameMap) {
-        this.tableAndEntityColumnNameMap = tableAndEntityColumnNameMap;
+    public void setResultMapMap(Map<String, MyBatisResultMap> resultMapMap) {
+        this.resultMapMap = resultMapMap;
     }
 }

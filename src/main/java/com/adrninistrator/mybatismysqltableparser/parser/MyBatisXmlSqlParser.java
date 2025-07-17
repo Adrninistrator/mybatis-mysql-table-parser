@@ -2,6 +2,8 @@ package com.adrninistrator.mybatismysqltableparser.parser;
 
 import com.adrninistrator.mybatismysqltableparser.common.MyBatisTableParserConstants;
 import com.adrninistrator.mybatismysqltableparser.dto.MyBatisMySqlInfo;
+import com.adrninistrator.mybatismysqltableparser.dto.MyBatisResultMap;
+import com.adrninistrator.mybatismysqltableparser.dto.MyBatisResultMapResult;
 import com.adrninistrator.mybatismysqltableparser.dto.MyBatisXmlElement4Statement;
 import com.adrninistrator.mybatismysqltableparser.tokenhandler.DollarParameterTokenHandler;
 import com.adrninistrator.mybatismysqltableparser.tokenhandler.EmptyTokenHandler;
@@ -174,19 +176,19 @@ public class MyBatisXmlSqlParser {
         myBatisSqlInfo.setXmlFilePath(xmlFilePath);
         myBatisSqlInfo.setMapperInterfaceName(namespace);
         myBatisSqlInfo.setStatementMap(statementMap);
+        myBatisSqlInfo.setResultMapMap(new HashMap<>());
 
-        boolean resultMapHandled = false;
         for (Element element : root.getChildren()) {
             String elementName = element.getName();
-            if ("resultMap".equals(elementName) && !resultMapHandled) {
+            if ("resultMap".equals(elementName)) {
                 // 处理resultMap元素，不判断resultMap元素的id，因为存在id非BaseResultMap的情况
                 handleResultMapElement(myBatisSqlInfo, element);
-                resultMapHandled = true;
             } else if (StringUtils.equalsAny(elementName, MyBatisTableParserConstants.XML_ELEMENT_NAME_SELECT, MyBatisTableParserConstants.XML_ELEMENT_NAME_INSERT,
                     MyBatisTableParserConstants.XML_ELEMENT_NAME_UPDATE, MyBatisTableParserConstants.XML_ELEMENT_NAME_DELETE)) {
                 try {
                     // 处理sql语句
                     String sqlId = element.getAttributeValue("id");
+                    String resultMap = element.getAttributeValue("resultMap", "");
                     List<String> sqlFragmentList = new ArrayList<>();
 
                     // 处理selectKey元素，order=BEFORE
@@ -203,10 +205,50 @@ public class MyBatisXmlSqlParser {
                     // 将sql片段列表拼接为多条完整sql语句
                     List<String> fullSqlList = appendSqlFragment(sqlFragmentList, false);
 
-                    MyBatisXmlElement4Statement statement = new MyBatisXmlElement4Statement(elementName, fullSqlList);
+                    MyBatisXmlElement4Statement statement = new MyBatisXmlElement4Statement(elementName, fullSqlList, resultMap);
                     statementMap.put(sqlId, statement);
                 } catch (Exception e) {
                     logger.warn("获取MyBatis XML文件中的sql语句出现异常 ", e);
+                }
+            }
+        }
+
+        Map<String, MyBatisResultMap> resultMapMap = myBatisSqlInfo.getResultMapMap();
+        if (resultMapMap != null) {
+            /*
+                记录对应的Entity类名
+                1. resultMap的id为BaseResultMap
+                2. 只有一个resultMap
+             */
+            MyBatisResultMap baseResultMap = resultMapMap.get("BaseResultMap");
+            if (baseResultMap != null) {
+                myBatisSqlInfo.setEntityClassName(baseResultMap.getEntityType());
+            } else if (resultMapMap.size() == 1) {
+                MyBatisResultMap myBatisResultMap = null;
+                for (Map.Entry<String, MyBatisResultMap> entry : resultMapMap.entrySet()) {
+                    myBatisResultMap = entry.getValue();
+                    break;
+                }
+                myBatisSqlInfo.setEntityClassName(myBatisResultMap.getEntityType());
+            } else {
+                myBatisSqlInfo.setEntityClassName("");
+            }
+
+            // 处理resultMap的extends，将上层的信息复制到下层中
+            for (Map.Entry<String, MyBatisResultMap> entry : resultMapMap.entrySet()) {
+                MyBatisResultMap myBatisResultMap = entry.getValue();
+                if (StringUtils.isBlank(myBatisResultMap.getExtendsResultMap())) {
+                    continue;
+                }
+                MyBatisResultMap upperMyBatisResultMap = resultMapMap.get(myBatisResultMap.getExtendsResultMap());
+                if (upperMyBatisResultMap == null) {
+                    continue;
+                }
+                List<MyBatisResultMapResult> myBatisResultMapResultList = myBatisResultMap.getResultMapResultList();
+                for (MyBatisResultMapResult upperMyBatisResultMapResult : upperMyBatisResultMap.getResultMapResultList()) {
+                    if (!myBatisResultMapResultList.contains(upperMyBatisResultMapResult)) {
+                        myBatisResultMapResultList.add(upperMyBatisResultMapResult);
+                    }
                 }
             }
         }
@@ -215,27 +257,30 @@ public class MyBatisXmlSqlParser {
 
     // 处理resultMap元素
     private void handleResultMapElement(MyBatisMySqlInfo myBatisSqlInfo, Element element) {
-        // 记录对应的Entity类名
-        myBatisSqlInfo.setEntityClassName(element.getAttributeValue("type"));
+        String resultMapId = element.getAttributeValue("id");
 
-        Map<String, String> entityAndColumnNameMap = new HashMap<>();
-        Map<String, String> tableAndEntityColumnNameMap = new HashMap<>();
-        myBatisSqlInfo.setEntityAndColumnNameMap(entityAndColumnNameMap);
-        myBatisSqlInfo.setTableAndEntityColumnNameMap(tableAndEntityColumnNameMap);
+        Map<String, MyBatisResultMap> resultMapMap = myBatisSqlInfo.getResultMapMap();
+        MyBatisResultMap myBatisResultMap = new MyBatisResultMap();
+        resultMapMap.put(resultMapId, myBatisResultMap);
+        myBatisResultMap.setId(resultMapId);
+        myBatisResultMap.setEntityType(element.getAttributeValue("type"));
+        myBatisResultMap.setExtendsResultMap(element.getAttributeValue("extends"));
+        List<MyBatisResultMapResult> resultMapResultList = new ArrayList<>();
+        myBatisResultMap.setResultMapResultList(resultMapResultList);
+
         for (Element childElement : element.getChildren()) {
             if (!StringUtils.equalsAny(childElement.getName(), "id", "result")) {
                 continue;
             }
             // 处理id、result元素
             String column = childElement.getAttributeValue("column");
+            String jdbcType = childElement.getAttributeValue("jdbcType");
             String property = childElement.getAttributeValue("property");
-            if (StringUtils.isNoneBlank(column, property)) {
-                // 记录Entity类字段名与对应的数据库字段名
-                entityAndColumnNameMap.put(property, column);
-
-                // 记录数据库字段名与对应的entity类字段名
-                tableAndEntityColumnNameMap.put(column, property);
-            }
+            MyBatisResultMapResult myBatisResultMapResult = new MyBatisResultMapResult();
+            myBatisResultMapResult.setJavaEntityFieldName(property);
+            myBatisResultMapResult.setDbColumnType(jdbcType);
+            myBatisResultMapResult.setDbColumnName(column);
+            resultMapResultList.add(myBatisResultMapResult);
         }
     }
 

@@ -15,9 +15,13 @@ public class MyBatisXmlElement4Statement {
     // 多条完整的SQL语句列表
     private final List<String> fullSqlList;
 
-    public MyBatisXmlElement4Statement(String xmlElementName, List<String> fullSqlList) {
+    // resultMap字段值
+    private final String resultMap;
+
+    public MyBatisXmlElement4Statement(String xmlElementName, List<String> fullSqlList, String resultMap) {
         this.xmlElementName = xmlElementName;
         this.fullSqlList = fullSqlList;
+        this.resultMap = resultMap;
     }
 
     public String getXmlElementName() {
@@ -26,5 +30,9 @@ public class MyBatisXmlElement4Statement {
 
     public List<String> getFullSqlList() {
         return fullSqlList;
+    }
+
+    public String getResultMap() {
+        return resultMap;
     }
 }

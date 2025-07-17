@@ -2,7 +2,7 @@ apply plugin: 'eclipse'
 apply plugin: 'java'
 
 group 'com.github.adrninistrator'
-version = "0.1.0"
+version = "0.1.1"
 def projectName = "mybatis-mysql-table-parser"
 description = "${projectName}"
 sourceCompatibility = 1.8
@@ -40,7 +40,7 @@ sourceSets {
     }
 }
 
-List apache_common = ['org.apache.commons:commons-lang3:3.12.0']
+List apache_common = ['org.apache.commons:commons-lang3:3.17.0']
 
 List jdom = ['org.jdom:jdom2:2.0.6.1']
 
@@ -74,23 +74,13 @@ processResources {
     setDuplicatesStrategy(DuplicatesStrategy.INCLUDE)
 }
 
+processTestResources {
+    setDuplicatesStrategy(DuplicatesStrategy.INCLUDE)
+}
+
 task createProject {
     doFirst {
         sourceSets*.java.srcDirs*.each { it.mkdirs() }
         sourceSets*.resources.srcDirs*.each { it.mkdirs() }
-    }
-}
-
-task sourcesJar(type: Jar) {
-    doFirst {
-        archiveClassifier.set('sources')
-        from sourceSets.main.allJava
-    }
-}
-
-task javadocJar(type: Jar) {
-    doFirst {
-        archiveClassifier.set('javadoc')
-        from javadoc.destinationDir
     }
 }
